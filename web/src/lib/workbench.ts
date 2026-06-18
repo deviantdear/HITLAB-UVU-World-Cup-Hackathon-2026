@@ -147,6 +147,22 @@ export const INV_STATUS_STYLE: Record<InvStatus, string> = {
   not_modeled: "bg-slate-100 text-slate-500",
 };
 
+/** Published-models library (portfolio of finished, human-approved artifacts). */
+export interface ModelCard {
+  id: string;
+  title: string;
+  entity: string;
+  office: string;
+  version: number;
+  fields: number;
+}
+
+export const MODELS: ModelCard[] = [
+  { id: "marriage", title: "Marriage License", entity: "Utah County", office: "County Clerk", version: 1, fields: 8 },
+  { id: "building", title: "Building Permit", entity: "Provo City", office: "Building & Zoning", version: 1, fields: 8 },
+  { id: "business", title: "Business License", entity: "Salt Lake County", office: "Business Licensing", version: 1, fields: 8 },
+];
+
 export interface InvNode {
   id: string;
   label: string;

@@ -16,8 +16,9 @@ import { MaintenanceView } from "@/components/MaintenanceView";
 import { SediCodaView } from "@/components/SediCodaView";
 import { GenerateView } from "@/components/workbench/GenerateView";
 import { RedactionView } from "@/components/workbench/RedactionView";
+import { ModelsLibrary } from "@/components/workbench/ModelsLibrary";
 
-type AppView = WorkbenchView | "reviewDetail" | "generate";
+type AppView = WorkbenchView | "reviewDetail" | "generate" | "modelDoc";
 
 const META: Record<AppView, { title: string; sub: string }> = {
   dashboard: { title: "Dashboard", sub: "Your governance program at a glance" },
@@ -25,6 +26,7 @@ const META: Record<AppView, { title: string; sub: string }> = {
   review: { title: "Review queue", sub: "Exceptions that need a human decision" },
   reviewDetail: { title: "Human review", sub: "Marriage License · Utah County · Secondary Classification" },
   generate: { title: "Generate a model", sub: "Ten agents build a governance model live" },
+  modelDoc: { title: "Governance model", sub: "Human-approved · published v1" },
   models: { title: "Published models", sub: "Human-approved governance models" },
   compare: { title: "Compare & harmonize", sub: "The same function across jurisdictions" },
   versions: { title: "Version history", sub: "Legislative change → human-approved updates" },
@@ -33,7 +35,11 @@ const META: Record<AppView, { title: string; sub: string }> = {
   settings: { title: "Settings", sub: "Workbench configuration" },
 };
 
-const DRILL_IN: AppView[] = ["reviewDetail", "compare", "versions", "models"];
+// Views reached by drilling in (not in the sidebar) → where their back button returns.
+const BACK_TO: Partial<Record<AppView, AppView>> = {
+  reviewDetail: "review",
+  modelDoc: "models",
+};
 
 export function WorkbenchApp() {
   const [view, setView] = useState<AppView>("dashboard");
@@ -52,7 +58,7 @@ export function WorkbenchApp() {
   return (
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar
-        view={view === "reviewDetail" ? "review" : view === "generate" ? "inventory" : view}
+        view={view === "reviewDetail" ? "review" : view === "generate" ? "inventory" : view === "modelDoc" ? "models" : view}
         onNavigate={(v) => setView(v)}
         reviewerName={reviewerName}
         reviewCount={reviewCount}
@@ -62,12 +68,12 @@ export function WorkbenchApp() {
       <main className="flex min-w-0 flex-1 flex-col">
         {/* Topbar */}
         <div className="sticky top-0 z-40 flex h-[62px] items-center gap-4 border-b border-slate-200 bg-white/90 px-7 backdrop-blur-md backdrop-saturate-150">
-          {DRILL_IN.includes(view) ? (
+          {BACK_TO[view] ? (
             <button
-              onClick={() => setView("review")}
+              onClick={() => setView(BACK_TO[view]!)}
               className="flex-none rounded-lg border border-slate-300 px-2.5 py-1.5 text-[13px] font-semibold text-slate-600 hover:bg-slate-100"
             >
-              ‹ Back to queue
+              ‹ Back
             </button>
           ) : null}
           <div className="min-w-0 flex-1">
@@ -93,11 +99,12 @@ export function WorkbenchApp() {
               onOpenItem={openItem}
             />
           )}
-          {view === "inventory" && <InventoryTree onGenerate={() => setView("generate")} />}
+          {view === "inventory" && <InventoryTree onGenerate={() => setView("generate")} onOpenModel={() => setView("modelDoc")} />}
           {view === "generate" && <GenerateView onDone={() => setView("models")} />}
           {view === "review" && <ReviewQueue scanned={scanned} onScan={() => setScanned(true)} onOpen={openItem} />}
           {view === "reviewDetail" && <ReviewView />}
-          {view === "models" && <ModelDocumentView />}
+          {view === "models" && <ModelsLibrary onOpen={() => setView("modelDoc")} />}
+          {view === "modelDoc" && <ModelDocumentView />}
           {view === "compare" && <ComparisonView />}
           {view === "versions" && <MaintenanceView />}
           {view === "redaction" && <RedactionView />}
