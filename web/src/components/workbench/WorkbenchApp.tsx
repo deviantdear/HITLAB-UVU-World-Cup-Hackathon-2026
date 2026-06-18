@@ -15,6 +15,7 @@ import { ComparisonView } from "@/components/ComparisonView";
 import { MaintenanceView } from "@/components/MaintenanceView";
 import { SediCodaView } from "@/components/SediCodaView";
 import { GenerateView } from "@/components/workbench/GenerateView";
+import { RedactionView } from "@/components/workbench/RedactionView";
 
 type AppView = WorkbenchView | "reviewDetail" | "generate";
 
@@ -27,6 +28,7 @@ const META: Record<AppView, { title: string; sub: string }> = {
   models: { title: "Published models", sub: "Human-approved governance models" },
   compare: { title: "Compare & harmonize", sub: "The same function across jurisdictions" },
   versions: { title: "Version history", sub: "Legislative change → human-approved updates" },
+  redaction: { title: "Public-records release", sub: "What's disclosed when the public requests a record" },
   sedi: { title: "SEDI identity", sub: "Where governance connects to verifiable identity" },
   settings: { title: "Settings", sub: "Workbench configuration" },
 };
@@ -90,6 +92,7 @@ export function WorkbenchApp() {
           {view === "models" && <ModelDocumentView />}
           {view === "compare" && <ComparisonView />}
           {view === "versions" && <MaintenanceView />}
+          {view === "redaction" && <RedactionView />}
           {view === "sedi" && <SediCodaView />}
           {view === "settings" && <Settings reviewerName={reviewerName} onNameChange={setReviewerName} />}
         </div>

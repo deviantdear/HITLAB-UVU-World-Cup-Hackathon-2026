@@ -8,6 +8,7 @@ export type WorkbenchView =
   | "models"
   | "compare"
   | "versions"
+  | "redaction"
   | "sedi"
   | "settings";
 
