@@ -31,11 +31,13 @@ const HEAT = Array.from({ length: 36 }, (_, i) =>
 export function Dashboard({
   reviewerName,
   reviewCount,
+  inconsistencyCount,
   onNavigate,
   onOpenItem,
 }: {
   reviewerName: string;
   reviewCount: number;
+  inconsistencyCount: number;
   onNavigate: (v: WorkbenchView) => void;
   onOpenItem: (item: ReviewItem) => void;
 }) {
@@ -57,7 +59,7 @@ export function Dashboard({
         <Kpi dot="#059669" label="Governed" value={DASHBOARD.governedCount.toLocaleString()} sub={`of ${DASHBOARD.statewideTotal.toLocaleString()}+ functions statewide`} onClick={() => onNavigate("models")} />
         <Kpi dot="#E8852B" label="Awaiting your review" value={reviewCount} sub="flagged items need a human" onClick={() => onNavigate("review")} />
         <Kpi dot="#0EA5E9" label="Generating now" value={DASHBOARD.generatingCount} sub="orchestration runs active" onClick={() => onNavigate("inventory")} />
-        <Kpi dot="#D97706" label="Inconsistencies" value={4} sub="same data, unequal rights" onClick={() => onNavigate("compare")} />
+        <Kpi dot="#D97706" label="Inconsistencies" value={inconsistencyCount} sub="same data, unequal rights" onClick={() => onNavigate("review")} />
       </div>
 
       <div className="grid grid-cols-1 items-start gap-[18px] lg:grid-cols-[1.55fr_1fr]">

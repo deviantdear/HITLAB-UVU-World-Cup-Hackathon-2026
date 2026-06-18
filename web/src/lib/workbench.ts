@@ -8,6 +8,7 @@ export type WorkbenchView =
   | "models"
   | "compare"
   | "versions"
+  | "redaction"
   | "sedi"
   | "settings";
 
@@ -39,35 +40,71 @@ export const REVIEW_TYPE_STYLE: Record<ReviewType, string> = {
   inconsistency: "bg-rose-100 text-rose-700",
 };
 
+/** Base queue — always present (2 QA flags + 1 legislative). */
 export const REVIEW_QUEUE: ReviewItem[] = [
   {
-    id: "rq-ssn",
+    id: "rq-bizlic-orem",
     type: "qa_flag",
-    title: "Secondary Classification — Social Security Number",
-    entity: "Utah County",
-    functionName: "Marriage License",
-    preview: "QA held this back at 71% confidence — §81-2-303(4) handling is nuanced and high-sensitivity.",
-    meta: "71% confidence",
+    title: "Secondary Classification",
+    entity: "Orem City",
+    functionName: "Business License",
+    preview: "Private — owner SSN / EIN and home address are protected under § 63G-2-302.",
+    meta: "71% conf",
+    opens: "review",
+  },
+  {
+    id: "rq-death",
+    type: "qa_flag",
+    title: "Secondary Classification",
+    entity: "Utah DHHS",
+    functionName: "Death Certificate",
+    preview: "Private — cause of death and SSN are protected under § 26B-8-119.",
+    meta: "71% conf",
     opens: "review",
   },
   {
     id: "rq-hb412",
     type: "legislative",
-    title: "Retention & Disposition — proposed v2",
+    title: "Proposed update v2 — retention & SSN access",
     entity: "Utah County",
-    functionName: "Marriage License",
-    preview: "H.B. ___ (illustrative) caps active retention at 75 years, then transfer to State Archives.",
-    meta: "2 fields affected",
+    functionName: "Marriage Licenses",
+    preview:
+      "Hypothetical Utah H.B. ___ caps active retention at 75 years and re-scopes SSN access to DHHS / ORS. Awaiting your sign-off.",
+    meta: "2 fields",
     opens: "versions",
   },
+];
+
+/** Surfaced only after the cross-jurisdiction consistency scan runs. */
+export const REVIEW_INCONSISTENCIES: ReviewItem[] = [
   {
-    id: "rq-bizlic",
+    id: "rq-inc-ssn",
     type: "inconsistency",
-    title: "Business License — owner data governed unequally",
-    entity: "Utah County ↔ Orem City",
-    functionName: "Business License",
-    preview: "Same owner PII classified Public in one jurisdiction, Private in the other (+ divergent retention).",
-    meta: "4 inconsistencies",
+    title: "Owner SSN / EIN — Public vs Private",
+    entity: "13 municipalities",
+    functionName: "Business Licenses",
+    preview: "The same identifier is classified Public in 1 jurisdiction but Private in 12 — unequal protection for identical data.",
+    meta: "13 jurisdictions",
+    opens: "compare",
+  },
+  {
+    id: "rq-inc-retention",
+    type: "inconsistency",
+    title: "Contractor SSN retention varies",
+    entity: "9 municipalities",
+    functionName: "Building Permits",
+    preview: "Retention for the same record ranges from 5 years to permanent across 9 cities.",
+    meta: "9 jurisdictions",
+    opens: "compare",
+  },
+  {
+    id: "rq-inc-address",
+    type: "inconsistency",
+    title: "Owner home address — Public vs Private",
+    entity: "9 cities",
+    functionName: "Dog Licenses",
+    preview: "§ 63G-2-302 applied inconsistently: address Public in 3 cities, Private in 6.",
+    meta: "9 jurisdictions",
     opens: "compare",
   },
 ];
@@ -109,6 +146,22 @@ export const INV_STATUS_STYLE: Record<InvStatus, string> = {
   needs_update: "bg-rose-100 text-rose-700",
   not_modeled: "bg-slate-100 text-slate-500",
 };
+
+/** Published-models library (portfolio of finished, human-approved artifacts). */
+export interface ModelCard {
+  id: string;
+  title: string;
+  entity: string;
+  office: string;
+  version: number;
+  fields: number;
+}
+
+export const MODELS: ModelCard[] = [
+  { id: "marriage", title: "Marriage License", entity: "Utah County", office: "County Clerk", version: 1, fields: 8 },
+  { id: "building", title: "Building Permit", entity: "Provo City", office: "Building & Zoning", version: 1, fields: 8 },
+  { id: "business", title: "Business License", entity: "Salt Lake County", office: "Business Licensing", version: 1, fields: 8 },
+];
 
 export interface InvNode {
   id: string;

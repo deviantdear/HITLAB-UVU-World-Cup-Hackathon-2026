@@ -1,18 +1,24 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useReplay, type ReplayGate } from "@/hooks/useReplay";
 import { marriageLicenseRun } from "@/lib/data";
 import { OrchestrationGraph } from "@/components/OrchestrationGraph";
 import { GovernanceModelPanel } from "@/components/GovernanceModelPanel";
 import { ReplayControls } from "@/components/ReplayControls";
+import { ConflictModal, type ResolutionId } from "@/components/workbench/ConflictModal";
+
+const RESOLUTION_LABEL: Record<ResolutionId, string> = {
+  remove: "SSN removed from the license record",
+  keep: "SSN kept with a documented justification",
+};
 
 /**
- * The "watch the agents build a model" flow. Runs the 10-agent orchestration live, then pauses at
- * the QA flag and hands the flagged field off to the Review queue (create → review loop).
+ * "Watch the agents build" flow. Runs the 10-agent orchestration live, pauses at the
+ * inter-agent conflict, and lets the officer resolve it inline (no trip to the queue) → publishes.
  */
-export function GenerateView({ onFlagged }: { onFlagged: () => void }) {
+export function GenerateView({ onDone }: { onDone?: () => void }) {
   const gates = useMemo<ReplayGate[]>(() => {
     const flag = marriageLicenseRun.events.find((e) => e.type === "qa_flag");
     const review = marriageLicenseRun.events.find((e) => e.type === "human_review");
@@ -22,6 +28,8 @@ export function GenerateView({ onFlagged }: { onFlagged: () => void }) {
 
   const replay = useReplay(marriageLicenseRun.events, { gates, autoPlay: true });
   const { state, pendingGate } = replay;
+  const [resolution, setResolution] = useState<ResolutionId | null>(null);
+  const published = state.publishedVersion != null;
 
   return (
     <div className="flex flex-col">
@@ -41,27 +49,24 @@ export function GenerateView({ onFlagged }: { onFlagged: () => void }) {
         <ReplayControls replay={replay} />
       </div>
 
+      {/* Resolved → published confirmation (inline, no queue trip) */}
       <AnimatePresence>
-        {pendingGate ? (
+        {published && resolution ? (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="flex items-center justify-between gap-4 border-b border-amber-300 bg-amber-50 px-6 py-3"
+            className="flex items-center justify-between gap-4 border-b border-emerald-300 bg-emerald-50 px-6 py-3"
           >
-            <div className="flex items-center gap-3">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-amber-400 text-sm font-bold text-amber-950">!</span>
-              <p className="text-sm text-amber-900">
-                <span className="font-semibold">Draft complete — 1 field flagged for human review.</span>{" "}
-                The Quality Assurance agent held back the Secondary Classification at low confidence.
-              </p>
-            </div>
-            <button
-              onClick={onFlagged}
-              className="shrink-0 rounded-full bg-navy px-5 py-2 text-sm font-semibold text-white hover:bg-navy-deep"
-            >
-              Open in review queue →
-            </button>
+            <p className="text-sm text-emerald-900">
+              <span className="font-semibold">✓ Resolved — {RESOLUTION_LABEL[resolution]}.</span> Model published v
+              {state.publishedVersion} by Chris B.
+            </p>
+            {onDone ? (
+              <button onClick={onDone} className="shrink-0 rounded-full bg-navy px-5 py-2 text-sm font-semibold text-white hover:bg-navy-deep">
+                View published model →
+              </button>
+            ) : null}
           </motion.div>
         ) : null}
       </AnimatePresence>
@@ -74,6 +79,16 @@ export function GenerateView({ onFlagged }: { onFlagged: () => void }) {
           <GovernanceModelPanel state={state} model={marriageLicenseRun.model} />
         </section>
       </div>
+
+      {/* Inline conflict resolution — appears when the build hits the agent conflict */}
+      {pendingGate && !resolution ? (
+        <ConflictModal
+          onApply={(id) => {
+            setResolution(id);
+            replay.release();
+          }}
+        />
+      ) : null}
     </div>
   );
 }

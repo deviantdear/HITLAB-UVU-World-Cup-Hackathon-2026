@@ -21,8 +21,9 @@ const NAV: NavItem[] = [
   { view: "inventory", group: "workspace", label: "Governance inventory", icon: I("M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3Z", <><path d="M9 3v15" /><path d="M15 6v15" /></>) },
   { view: "review", group: "workspace", label: "Review queue", icon: I("M22 12h-6l-2 3h-4l-2-3H2", <path d="M5.5 5.5 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.5A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.5Z" />) },
   { view: "models", group: "workspace", label: "Published models", icon: I("M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z", <><path d="M14 2v6h6" /><path d="M8 13h8" /><path d="M8 17h6" /></>) },
-  { view: "compare", group: "intelligence", label: "Compare & harmonize", icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="18" r="3" /><circle cx="6" cy="6" r="3" /><path d="M6 21V9a9 9 0 0 0 9 9" /></svg> },
+  { view: "compare", group: "intelligence", label: "Equal data rights", icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="18" r="3" /><circle cx="6" cy="6" r="3" /><path d="M6 21V9a9 9 0 0 0 9 9" /></svg> },
   { view: "versions", group: "intelligence", label: "Version history", icon: I("M3 3v5h5", <><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" /><path d="M12 7v5l4 2" /></>) },
+  { view: "redaction", group: "intelligence", label: "Public records", icon: I("M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z", <circle cx="12" cy="12" r="3" />) },
   { view: "sedi", group: "intelligence", label: "SEDI identity", icon: I("M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z", <path d="m9 12 2 2 4-4" />) },
 ];
 
