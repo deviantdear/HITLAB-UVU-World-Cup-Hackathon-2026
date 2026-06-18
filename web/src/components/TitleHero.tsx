@@ -11,7 +11,8 @@ export function TitleHero() {
         <img
           src="/brand/logo-white.svg"
           alt="Utah Office of Data Privacy"
-          className="mb-6 h-[60px] w-auto drop-shadow-[0_6px_18px_rgba(0,0,0,0.3)]"
+          className="mb-6 h-[60px] w-auto"
+          style={{ filter: "brightness(0) invert(1) drop-shadow(0 6px 18px rgba(0,0,0,.3))" }}
         />
         <div className="mb-5 text-xs font-bold uppercase tracking-[0.22em] text-white/60">
           An AI Agent Orchestration Concept
