@@ -28,8 +28,7 @@ function collectParents(nodes: InvNode[], acc: Set<string>): Set<string> {
 
 function countLeaves(node: InvNode): { modeled: number; total: number } {
   if (!node.children?.length) {
-    const modeled = node.status && node.status !== "not_modeled" ? 1 : 0;
-    return { modeled, total: 1 };
+    return { modeled: node.status && node.status !== "not_modeled" ? 1 : 0, total: 1 };
   }
   return node.children.reduce(
     (acc, c) => {
@@ -53,9 +52,30 @@ const STATS = INVENTORY.reduce(
   { unitTypes: 0, offices: 0, modeled: 0, records: 0 },
 );
 
+/** A pass-through ancestor rail column. */
+function RailCell({ on }: { on: boolean }) {
+  return (
+    <div className="relative w-[22px] shrink-0">
+      {on ? <span className="absolute left-1/2 top-0 h-full border-l border-slate-200" /> : null}
+    </div>
+  );
+}
+
+/** The ├ / └ elbow connecting a node to its parent. */
+function ElbowCell({ isLast }: { isLast: boolean }) {
+  return (
+    <div className="relative w-[22px] shrink-0">
+      <span className="absolute left-1/2 top-0 border-l border-slate-300" style={{ height: isLast ? "50%" : "100%" }} />
+      <span className="absolute left-1/2 top-1/2 w-1/2 border-t border-slate-300" />
+    </div>
+  );
+}
+
 function TreeRow({
   node,
   depth,
+  prefix,
+  isLast,
   expanded,
   toggle,
   onGenerate,
@@ -63,6 +83,8 @@ function TreeRow({
 }: {
   node: InvNode;
   depth: number;
+  prefix: boolean[]; // ancestor rail columns (length depth-1 for depth>=1)
+  isLast: boolean;
   expanded: Set<string>;
   toggle: (id: string) => void;
   onGenerate?: () => void;
@@ -74,70 +96,86 @@ function TreeRow({
   const top = depth === 0 ? TOP_META[node.id] : undefined;
   const counts = hasChildren ? countLeaves(node) : null;
   const openable = isLeaf && node.status && node.status !== "not_modeled";
+  const childPrefix = depth === 0 ? [] : [...prefix, !isLast];
 
   return (
     <div>
       <div
-        className={`flex items-center gap-2 border-b border-slate-50 py-2 pr-3 ${
-          hasChildren || openable ? "cursor-pointer hover:bg-slate-50" : ""
-        }`}
-        style={{ paddingLeft: 12 + depth * 22 }}
+        className={`flex items-stretch border-b border-slate-50 ${hasChildren || openable ? "cursor-pointer hover:bg-slate-50" : ""}`}
         onClick={hasChildren ? () => toggle(node.id) : openable ? onOpenModel : undefined}
       >
-        {hasChildren ? (
-          <span className={`flex-none text-[11px] text-slate-400 transition-transform ${isOpen ? "rotate-90" : ""}`}>▶</span>
-        ) : (
-          <span className="flex-none text-slate-300">•</span>
-        )}
-
-        {top ? (
-          <span
-            className="grid h-5 w-6 flex-none place-items-center rounded text-[9px] font-extrabold text-white"
-            style={{ background: top.color }}
-          >
-            {top.badge}
-          </span>
+        {/* Connector guides */}
+        {depth > 0 ? (
+          <div className="flex shrink-0">
+            {prefix.map((on, i) => (
+              <RailCell key={i} on={on} />
+            ))}
+            <ElbowCell isLast={isLast} />
+          </div>
         ) : null}
 
-        <span className={`flex-1 ${isLeaf ? "text-[13px] text-slate-800" : depth === 0 ? "font-display text-[14px] font-extrabold text-navy" : "text-[13px] font-semibold text-slate-700"}`}>
-          {node.label}
-          {top ? <span className="ml-2 text-[11px] font-normal text-slate-400">{top.sublabel}</span> : null}
-          {node.sublabel ? <span className="ml-2 text-[11px] font-normal text-slate-400">{node.sublabel}</span> : null}
-        </span>
+        {/* Row content */}
+        <div className={`flex flex-1 items-center gap-2 py-2 pr-3 ${depth === 0 ? "pl-3" : "pl-1"}`}>
+          {hasChildren ? (
+            <span className={`flex-none text-[10px] text-slate-400 transition-transform ${isOpen ? "rotate-90" : ""}`}>▶</span>
+          ) : null}
 
-        {counts ? (
-          <span className="flex-none text-[11px] font-medium text-slate-400">
-            {counts.modeled}/{counts.total} modeled
-          </span>
-        ) : null}
-
-        {isLeaf && node.status ? (
-          <span className="flex items-center gap-2">
-            <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${INV_STATUS_STYLE[node.status]}`}>
-              {INV_STATUS_LABEL[node.status]}
-              {node.version ? ` v${node.version}` : ""}
+          {top ? (
+            <span className="grid h-5 w-6 flex-none place-items-center rounded text-[9px] font-extrabold text-white" style={{ background: top.color }}>
+              {top.badge}
             </span>
-            {node.status === "not_modeled" ? (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onGenerate?.();
-                }}
-                className="rounded-md border border-dashed border-slate-300 px-2 py-0.5 text-[11px] font-semibold text-slate-500 hover:border-utah-orange hover:text-utah-orange"
-              >
-                + Generate
-              </button>
-            ) : (
-              <span className="text-base text-slate-300">›</span>
-            )}
+          ) : null}
+
+          <span className={`flex-1 ${isLeaf ? "text-[13px] text-slate-800" : depth === 0 ? "font-display text-[14px] font-extrabold text-navy" : "text-[13px] font-semibold text-slate-700"}`}>
+            {node.label}
+            {top ? <span className="ml-2 text-[11px] font-normal text-slate-400">{top.sublabel}</span> : null}
+            {node.sublabel ? <span className="ml-2 text-[11px] font-normal text-slate-400">{node.sublabel}</span> : null}
           </span>
-        ) : null}
+
+          {counts ? (
+            <span className="flex-none text-[11px] font-medium text-slate-400">
+              {counts.modeled}/{counts.total} modeled
+            </span>
+          ) : null}
+
+          {isLeaf && node.status ? (
+            <span className="flex items-center gap-2">
+              <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${INV_STATUS_STYLE[node.status]}`}>
+                {INV_STATUS_LABEL[node.status]}
+                {node.version ? ` v${node.version}` : ""}
+              </span>
+              {node.status === "not_modeled" ? (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onGenerate?.();
+                  }}
+                  className="rounded-md border border-dashed border-slate-300 px-2 py-0.5 text-[11px] font-semibold text-slate-500 hover:border-utah-orange hover:text-utah-orange"
+                >
+                  + Generate
+                </button>
+              ) : (
+                <span className="text-base text-slate-300">›</span>
+              )}
+            </span>
+          ) : null}
+        </div>
       </div>
 
       {hasChildren && isOpen ? (
         <div>
-          {node.children!.map((c) => (
-            <TreeRow key={c.id} node={c} depth={depth + 1} expanded={expanded} toggle={toggle} onGenerate={onGenerate} onOpenModel={onOpenModel} />
+          {node.children!.map((c, i) => (
+            <TreeRow
+              key={c.id}
+              node={c}
+              depth={depth + 1}
+              prefix={childPrefix}
+              isLast={i === node.children!.length - 1}
+              expanded={expanded}
+              toggle={toggle}
+              onGenerate={onGenerate}
+              onOpenModel={onOpenModel}
+            />
           ))}
         </div>
       ) : null}
@@ -198,8 +236,18 @@ export function InventoryTree({ onGenerate, onOpenModel }: { onGenerate?: () => 
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        {INVENTORY.map((n) => (
-          <TreeRow key={n.id} node={n} depth={0} expanded={expanded} toggle={toggle} onGenerate={onGenerate} onOpenModel={onOpenModel} />
+        {INVENTORY.map((n, i) => (
+          <TreeRow
+            key={n.id}
+            node={n}
+            depth={0}
+            prefix={[]}
+            isLast={i === INVENTORY.length - 1}
+            expanded={expanded}
+            toggle={toggle}
+            onGenerate={onGenerate}
+            onOpenModel={onOpenModel}
+          />
         ))}
       </div>
     </div>
