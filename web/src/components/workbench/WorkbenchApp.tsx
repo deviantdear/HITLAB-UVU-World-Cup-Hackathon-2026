@@ -14,14 +14,16 @@ import { ModelDocumentView } from "@/components/ModelDocumentView";
 import { ComparisonView } from "@/components/ComparisonView";
 import { MaintenanceView } from "@/components/MaintenanceView";
 import { SediCodaView } from "@/components/SediCodaView";
+import { GenerateView } from "@/components/workbench/GenerateView";
 
-type AppView = WorkbenchView | "reviewDetail";
+type AppView = WorkbenchView | "reviewDetail" | "generate";
 
 const META: Record<AppView, { title: string; sub: string }> = {
   dashboard: { title: "Dashboard", sub: "Your governance program at a glance" },
   inventory: { title: "Governance inventory", sub: "Every function, organized by jurisdiction" },
   review: { title: "Review queue", sub: "Exceptions that need a human decision" },
   reviewDetail: { title: "Human review", sub: "Marriage License · Utah County · Secondary Classification" },
+  generate: { title: "Generate a model", sub: "Ten agents build a governance model live" },
   models: { title: "Published models", sub: "Human-approved governance models" },
   compare: { title: "Compare & harmonize", sub: "The same function across jurisdictions" },
   versions: { title: "Version history", sub: "Legislative change → human-approved updates" },
@@ -46,7 +48,7 @@ export function WorkbenchApp() {
   return (
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar
-        view={view === "reviewDetail" ? "review" : view}
+        view={view === "reviewDetail" ? "review" : view === "generate" ? "inventory" : view}
         onNavigate={(v) => setView(v)}
         reviewerName={reviewerName}
         reviewCount={REVIEW_QUEUE.length}
@@ -69,7 +71,7 @@ export function WorkbenchApp() {
             <div className="truncate text-xs text-slate-400">{meta.sub}</div>
           </div>
           <button
-            onClick={() => setView("inventory")}
+            onClick={() => setView("generate")}
             className="flex-none rounded-lg bg-navy px-4 py-2.5 font-display text-[13px] font-bold text-white hover:bg-navy-deep"
           >
             + Generate a model
@@ -81,7 +83,8 @@ export function WorkbenchApp() {
           {view === "dashboard" && (
             <Dashboard reviewerName={reviewerName} reviewCount={REVIEW_QUEUE.length} onNavigate={setView} onOpenItem={openItem} />
           )}
-          {view === "inventory" && <InventoryTree />}
+          {view === "inventory" && <InventoryTree onGenerate={() => setView("generate")} />}
+          {view === "generate" && <GenerateView onFlagged={() => setView("reviewDetail")} />}
           {view === "review" && <ReviewQueue onOpen={openItem} />}
           {view === "reviewDetail" && <ReviewView />}
           {view === "models" && <ModelDocumentView />}

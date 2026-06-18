@@ -24,11 +24,13 @@ function TreeRow({
   depth,
   expanded,
   toggle,
+  onGenerate,
 }: {
   node: InvNode;
   depth: number;
   expanded: Set<string>;
   toggle: (id: string) => void;
+  onGenerate?: () => void;
 }) {
   const hasChildren = !!node.children?.length;
   const isOpen = expanded.has(node.id);
@@ -58,7 +60,13 @@ function TreeRow({
               {node.version ? ` v${node.version}` : ""}
             </span>
             {node.status === "not_modeled" ? (
-              <button className="rounded-md border border-dashed border-slate-300 px-2 py-0.5 text-[11px] font-semibold text-slate-500 hover:border-utah-orange hover:text-utah-orange">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onGenerate?.();
+                }}
+                className="rounded-md border border-dashed border-slate-300 px-2 py-0.5 text-[11px] font-semibold text-slate-500 hover:border-utah-orange hover:text-utah-orange"
+              >
                 + Generate
               </button>
             ) : null}
@@ -69,7 +77,7 @@ function TreeRow({
       {hasChildren && isOpen ? (
         <div>
           {node.children!.map((c) => (
-            <TreeRow key={c.id} node={c} depth={depth + 1} expanded={expanded} toggle={toggle} />
+            <TreeRow key={c.id} node={c} depth={depth + 1} expanded={expanded} toggle={toggle} onGenerate={onGenerate} />
           ))}
         </div>
       ) : null}
@@ -77,7 +85,7 @@ function TreeRow({
   );
 }
 
-export function InventoryTree() {
+export function InventoryTree({ onGenerate }: { onGenerate?: () => void }) {
   const [expanded, setExpanded] = useState<Set<string>>(() => collectParents(INVENTORY, new Set()));
   const toggle = (id: string) =>
     setExpanded((prev) => {
@@ -105,7 +113,7 @@ export function InventoryTree() {
 
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         {INVENTORY.map((n) => (
-          <TreeRow key={n.id} node={n} depth={0} expanded={expanded} toggle={toggle} />
+          <TreeRow key={n.id} node={n} depth={0} expanded={expanded} toggle={toggle} onGenerate={onGenerate} />
         ))}
       </div>
     </div>
