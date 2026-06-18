@@ -18,7 +18,7 @@ export function StepNav({ active }: { active: string }) {
 
   return (
     <header className="sticky top-0 z-50 flex h-[62px] items-center gap-5 border-b border-slate-200 bg-white/90 px-5 backdrop-blur-md backdrop-saturate-150">
-      <Link href="/" className="flex shrink-0 items-center gap-2.5">
+      <Link href="/presentation" className="flex shrink-0 items-center gap-2.5">
         <Hexagon />
         <div className="leading-tight">
           <div className="font-display text-[13.5px] font-extrabold tracking-tight text-slate-900">

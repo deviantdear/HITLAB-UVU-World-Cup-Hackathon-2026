@@ -7,7 +7,7 @@ export interface Step {
 
 /** The guided presentation flow, in order (matches the Utah Privacy design system). */
 export const STEPS: Step[] = [
-  { key: "title", n: "01", label: "Title", href: "/" },
+  { key: "title", n: "01", label: "Title", href: "/presentation" },
   { key: "scale", n: "02", label: "Scale", href: "/scale" },
   { key: "orchestration", n: "03", label: "Orchestration", href: "/orchestration" },
   { key: "review", n: "04", label: "Review", href: "/review" },

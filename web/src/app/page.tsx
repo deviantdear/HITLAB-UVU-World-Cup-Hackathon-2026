@@ -1,11 +1,5 @@
-import { StepNav } from "@/components/StepNav";
-import { TitleHero } from "@/components/TitleHero";
+import { WorkbenchApp } from "@/components/workbench/WorkbenchApp";
 
 export default function Home() {
-  return (
-    <>
-      <StepNav active="title" />
-      <TitleHero />
-    </>
-  );
+  return <WorkbenchApp />;
 }

@@ -1,0 +1,126 @@
+"use client";
+
+import type { WorkbenchView } from "@/lib/workbench";
+
+interface NavItem {
+  view: WorkbenchView;
+  label: string;
+  icon: React.ReactNode;
+  group: "workspace" | "intelligence";
+}
+
+const I = (d: string, extra?: React.ReactNode) => (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d={d} />
+    {extra}
+  </svg>
+);
+
+const NAV: NavItem[] = [
+  { view: "dashboard", group: "workspace", label: "Dashboard", icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /></svg> },
+  { view: "inventory", group: "workspace", label: "Governance inventory", icon: I("M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3Z", <><path d="M9 3v15" /><path d="M15 6v15" /></>) },
+  { view: "review", group: "workspace", label: "Review queue", icon: I("M22 12h-6l-2 3h-4l-2-3H2", <path d="M5.5 5.5 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.5A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.5Z" />) },
+  { view: "models", group: "workspace", label: "Published models", icon: I("M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z", <><path d="M14 2v6h6" /><path d="M8 13h8" /><path d="M8 17h6" /></>) },
+  { view: "compare", group: "intelligence", label: "Compare & harmonize", icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="18" r="3" /><circle cx="6" cy="6" r="3" /><path d="M6 21V9a9 9 0 0 0 9 9" /></svg> },
+  { view: "versions", group: "intelligence", label: "Version history", icon: I("M3 3v5h5", <><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" /><path d="M12 7v5l4 2" /></>) },
+  { view: "sedi", group: "intelligence", label: "SEDI identity", icon: I("M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z", <path d="m9 12 2 2 4-4" />) },
+];
+
+function NavRow({ item, active, onClick, badge, meta }: { item: NavItem; active: boolean; onClick: () => void; badge?: number; meta?: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-[13.5px] transition-colors ${
+        active ? "bg-white/15 font-semibold text-white" : "text-white/70 hover:bg-white/10 hover:text-white"
+      }`}
+    >
+      <span className="flex-none">{item.icon}</span>
+      <span className="flex-1">{item.label}</span>
+      {badge ? (
+        <span className="inline-flex h-[19px] min-w-[19px] items-center justify-center rounded-full bg-utah-orange px-1.5 font-display text-[11px] font-extrabold text-white">
+          {badge}
+        </span>
+      ) : meta ? (
+        <span className="font-mono text-[10px] text-white/45">{meta}</span>
+      ) : null}
+    </button>
+  );
+}
+
+export function Sidebar({
+  view,
+  onNavigate,
+  reviewerName,
+  reviewCount,
+  governedCount,
+}: {
+  view: WorkbenchView;
+  onNavigate: (v: WorkbenchView) => void;
+  reviewerName: string;
+  reviewCount: number;
+  governedCount: number;
+}) {
+  const initials =
+    reviewerName
+      .split(/\s+/)
+      .map((w) => w[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "CB";
+
+  return (
+    <aside
+      className="sticky top-0 flex h-screen w-64 flex-none flex-col overflow-hidden border-r border-black/20 text-white"
+      style={{ background: "linear-gradient(185deg,#0B3D6B,#082A4A)" }}
+    >
+      <button onClick={() => onNavigate("dashboard")} className="flex items-center gap-3 px-[18px] pb-4 pt-5 text-left">
+        <svg width="28" height="31" viewBox="0 0 26 29" fill="none" className="flex-none">
+          <path d="M13 1.5 24.3 8v13L13 27.5 1.7 21V8z" stroke="rgba(255,255,255,.5)" strokeWidth="1.4" fill="rgba(255,255,255,.07)" />
+          <path d="M13 7.2 19.4 11v7.6L13 22.4 6.6 18.6V11z" fill="#fff" />
+          <circle cx="13" cy="14.8" r="2.1" fill="#E8852B" />
+        </svg>
+        <div className="leading-tight">
+          <div className="font-display text-sm font-extrabold tracking-tight text-white">Data Governance</div>
+          <div className="text-[9.5px] font-bold uppercase tracking-[0.16em] text-white/50">Privacy Workbench</div>
+        </div>
+      </button>
+
+      <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-3 pb-3.5">
+        <div className="px-3 pb-1.5 pt-3 text-[9.5px] font-bold uppercase tracking-[0.14em] text-white/40">Workspace</div>
+        {NAV.filter((n) => n.group === "workspace").map((item) => (
+          <NavRow
+            key={item.view}
+            item={item}
+            active={view === item.view}
+            onClick={() => onNavigate(item.view)}
+            badge={item.view === "review" ? reviewCount : undefined}
+            meta={item.view === "models" ? String(governedCount) : undefined}
+          />
+        ))}
+
+        <div className="px-3 pb-1.5 pt-4 text-[9.5px] font-bold uppercase tracking-[0.14em] text-white/40">Intelligence</div>
+        {NAV.filter((n) => n.group === "intelligence").map((item) => (
+          <NavRow key={item.view} item={item} active={view === item.view} onClick={() => onNavigate(item.view)} />
+        ))}
+
+        <div className="flex-1" />
+        <NavRow
+          item={{ view: "settings", group: "workspace", label: "Settings", icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" /></svg> }}
+          active={view === "settings"}
+          onClick={() => onNavigate("settings")}
+        />
+      </nav>
+
+      <div className="flex items-center gap-2.5 border-t border-white/10 px-4 py-3">
+        <span className="grid h-[34px] w-[34px] flex-none place-items-center rounded-full bg-gradient-to-br from-utah-orange to-utah-orange-deep font-display text-[13px] font-extrabold text-white">
+          {initials}
+        </span>
+        <div className="min-w-0 flex-1 leading-tight">
+          <div className="truncate text-[12.5px] font-bold text-white">{reviewerName}</div>
+          <div className="text-[10.5px] text-white/55">County Privacy Officer</div>
+        </div>
+        <span className="h-[7px] w-[7px] flex-none rounded-full bg-emerald-400 shadow-[0_0_0_3px_rgba(16,185,129,0.18)]" />
+      </div>
+    </aside>
+  );
+}
