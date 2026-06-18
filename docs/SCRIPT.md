@@ -119,7 +119,7 @@ records team could reach by hand."
   approval (or rejection/edit) → new published version, with a full audit trail.
 - **What's illustrative vs. real?** The marriage-license data is validated against Utah's Marriage Model
   and the statute citations (§ 81-2-303, § 63G-2-302) are real. The business-license comparison values and
-  the maintenance bill ("H.B. ___") are **clearly labeled illustrative** — we never present invented law
+  the maintenance bill ("H.B. 412") are **clearly labeled illustrative** — we never present invented law
   as real.
 - **Why a workbench instead of full autonomy?** Deliberate. The bounty frames these as *operational
   governance infrastructure* for a cash- and compliance-constrained public body. [`/presentations`](../presentations)

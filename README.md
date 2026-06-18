@@ -101,7 +101,7 @@ We are careful not to present invented law as real:
 
 - The **marriage-license** model uses validated ground-truth data, and its statute citations
   (e.g. Utah Code § 81-2-303(4), § 63G-2-302) are **accurate**.
-- The **business-license** comparison values and the **maintenance bill** ("H.B. ___") are **clearly
+- The **business-license** comparison values and the **maintenance bill** ("H.B. 412") are **clearly
   labeled illustrative**, chosen to demonstrate the mechanism.
 - The demo **replays curated golden-run data** committed in `/data`; the orchestration engine that
   produces such runs is documented in [/presentations](presentations).
