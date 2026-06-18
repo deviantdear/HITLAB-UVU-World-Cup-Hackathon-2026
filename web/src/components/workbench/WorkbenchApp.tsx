@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { ReviewItem, WorkbenchView } from "@/lib/workbench";
-import { REVIEW_QUEUE } from "@/lib/workbench";
+import { REVIEW_QUEUE, REVIEW_INCONSISTENCIES } from "@/lib/workbench";
 import { Sidebar } from "@/components/workbench/Sidebar";
 import { Dashboard } from "@/components/workbench/Dashboard";
 import { InventoryTree } from "@/components/workbench/InventoryTree";
@@ -38,6 +38,8 @@ const DRILL_IN: AppView[] = ["reviewDetail", "compare", "versions", "models"];
 export function WorkbenchApp() {
   const [view, setView] = useState<AppView>("dashboard");
   const [reviewerName, setReviewerName] = useState("Chris B.");
+  const [scanned, setScanned] = useState(false);
+  const reviewCount = REVIEW_QUEUE.length + (scanned ? REVIEW_INCONSISTENCIES.length : 0);
 
   const openItem = (item: ReviewItem) => {
     if (item.type === "qa_flag") setView("reviewDetail");
@@ -53,7 +55,7 @@ export function WorkbenchApp() {
         view={view === "reviewDetail" ? "review" : view === "generate" ? "inventory" : view}
         onNavigate={(v) => setView(v)}
         reviewerName={reviewerName}
-        reviewCount={REVIEW_QUEUE.length}
+        reviewCount={reviewCount}
         governedCount={1284}
       />
 
@@ -83,11 +85,17 @@ export function WorkbenchApp() {
         {/* Active view */}
         <div className="flex-1">
           {view === "dashboard" && (
-            <Dashboard reviewerName={reviewerName} reviewCount={REVIEW_QUEUE.length} onNavigate={setView} onOpenItem={openItem} />
+            <Dashboard
+              reviewerName={reviewerName}
+              reviewCount={reviewCount}
+              inconsistencyCount={scanned ? REVIEW_INCONSISTENCIES.length : 0}
+              onNavigate={setView}
+              onOpenItem={openItem}
+            />
           )}
           {view === "inventory" && <InventoryTree onGenerate={() => setView("generate")} />}
           {view === "generate" && <GenerateView onDone={() => setView("models")} />}
-          {view === "review" && <ReviewQueue onOpen={openItem} />}
+          {view === "review" && <ReviewQueue scanned={scanned} onScan={() => setScanned(true)} onOpen={openItem} />}
           {view === "reviewDetail" && <ReviewView />}
           {view === "models" && <ModelDocumentView />}
           {view === "compare" && <ComparisonView />}
