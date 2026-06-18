@@ -7,6 +7,7 @@ import { marriageLicenseRun } from "@/lib/data";
 import { OrchestrationGraph } from "@/components/OrchestrationGraph";
 import { GovernanceModelPanel } from "@/components/GovernanceModelPanel";
 import { ReplayControls } from "@/components/ReplayControls";
+import { NavTabs } from "@/components/NavTabs";
 
 export function DemoView() {
   const gates = useMemo<ReplayGate[]>(() => {
@@ -32,9 +33,12 @@ export function DemoView() {
             Watch 10 specialized AI agents build a governance model — with a human in the loop.
           </p>
         </div>
-        <span className="rounded-full bg-utah-orange/10 px-3 py-1 text-xs font-semibold text-utah-orange">
-          Demo · Marriage License
-        </span>
+        <div className="flex items-center gap-3">
+          <NavTabs active="demo" />
+          <span className="rounded-full bg-utah-orange/10 px-3 py-1 text-xs font-semibold text-utah-orange">
+            Demo · Marriage License
+          </span>
+        </div>
       </header>
 
       <div className="border-b border-slate-200 bg-white px-6 py-2.5">
