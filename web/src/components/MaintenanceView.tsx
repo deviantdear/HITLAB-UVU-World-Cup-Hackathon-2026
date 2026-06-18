@@ -4,7 +4,6 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import type { MaintenanceUpdate } from "@/lib/maintenance";
 import { AGENT_LABEL } from "@/lib/agents";
-import { NavTabs } from "@/components/NavTabs";
 
 function VersionStep({ v, state }: { v: number; state: "published" | "proposed" | "current" }) {
   const styles =
@@ -27,16 +26,16 @@ export function MaintenanceView({ update }: { update: MaintenanceUpdate }) {
 
   return (
     <div className="min-h-screen bg-slate-50 px-6 py-5">
-      <header className="mb-4 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-lg font-bold tracking-tight text-navy">
-            Self-Maintenance · {title}
-          </h1>
-          <p className="text-xs text-slate-500">
-            AI agents continuously monitor the law and propose updates — a human approves every change.
-          </p>
+      <header className="mb-4">
+        <div className="mb-1 text-[11px] font-bold uppercase tracking-[0.2em] text-utah-orange">
+          Living governance
         </div>
-        <NavTabs active="maintenance" />
+        <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900">
+          The law changes. The model keeps up.
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">
+          AI agents continuously monitor the law and propose updates — a human approves every change.
+        </p>
       </header>
 
       {/* Legislative monitor alert */}

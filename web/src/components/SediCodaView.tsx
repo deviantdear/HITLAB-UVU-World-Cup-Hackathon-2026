@@ -1,5 +1,3 @@
-import { NavTabs } from "@/components/NavTabs";
-
 interface Layer {
   tag: string;
   title: string;
@@ -43,17 +41,17 @@ const LAYERS: Layer[] = [
 export function SediCodaView() {
   return (
     <div className="min-h-screen bg-slate-50 px-6 py-5">
-      <header className="mb-4 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-lg font-bold tracking-tight text-navy">
-            From Policy to Verifiable Identity
-          </h1>
-          <p className="text-xs text-slate-500">
-            Governance models are the policy layer. State-Endorsed Digital Identity (SEDI) is how that
-            policy is enforced — minimizing the data government ever holds.
-          </p>
+      <header className="mb-4">
+        <div className="mb-1 text-[11px] font-bold uppercase tracking-[0.2em] text-utah-orange">
+          The closing vision
         </div>
-        <NavTabs active="sedi" />
+        <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900">
+          Governance models connect to verifiable identity.
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">
+          Governance models are the policy layer. State-Endorsed Digital Identity (SEDI) is how that
+          policy is enforced — minimizing the data government ever holds.
+        </p>
       </header>
 
       {/* Layered architecture */}

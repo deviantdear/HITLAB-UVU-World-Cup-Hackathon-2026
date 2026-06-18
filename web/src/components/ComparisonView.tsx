@@ -1,7 +1,6 @@
 import type { ComparisonSet } from "@/lib/comparison";
 import type { GovernanceModel } from "@/lib/governanceModel";
 import { FIELD_ORDER, FIELD_LABEL } from "@/lib/fields";
-import { NavTabs } from "@/components/NavTabs";
 
 function record(m: GovernanceModel) {
   return m.transactions[0]?.records[0];
@@ -26,16 +25,16 @@ export function ComparisonView({ comparison }: { comparison: ComparisonSet }) {
 
   return (
     <div className="min-h-screen bg-slate-50 px-6 py-5">
-      <header className="mb-4 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-lg font-bold tracking-tight text-navy">
-            Equal Data Rights · {title}
-          </h1>
-          <p className="text-xs text-slate-500">
-            The same function and the same personal data — governed differently by two entities.
-          </p>
+      <header className="mb-4">
+        <div className="mb-1 text-[11px] font-bold uppercase tracking-[0.2em] text-utah-orange">
+          Equal data rights
         </div>
-        <NavTabs active="compare" />
+        <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900">
+          Same data, unequal rights · {title}
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">
+          The same function and the same personal data — governed differently by two entities.
+        </p>
       </header>
 
       {/* Inequality banner */}

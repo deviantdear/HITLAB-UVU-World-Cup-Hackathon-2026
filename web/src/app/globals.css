@@ -1,24 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f5f7;
+  --foreground: #1f2733;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 
-  /* Utah government palette (from the Marriage Model) */
+  /* Typography (from the Utah Privacy design system) */
+  --font-sans: var(--font-source);
+  --font-display: var(--font-mulish);
+  --font-mono: var(--font-mono-ibm);
+
+  /* Utah Office of Data Privacy palette */
   --color-navy: #0b3d6b;
   --color-navy-deep: #082a4a;
   --color-utah-orange: #e8852b;
+  --color-utah-orange-deep: #c96b18;
+  --color-tint: #eaf1f8;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-source), -apple-system, BlinkMacSystemFont, sans-serif;
 }

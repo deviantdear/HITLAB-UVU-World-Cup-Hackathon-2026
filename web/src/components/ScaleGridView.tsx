@@ -2,7 +2,6 @@
 
 import { useMemo, useState, type ReactNode } from "react";
 import type { CellState, ScaleGridData } from "@/lib/scale";
-import { NavTabs } from "@/components/NavTabs";
 
 interface CellValue {
   state: CellState;
@@ -43,14 +42,16 @@ export function ScaleGridView({ data }: { data: ScaleGridData }) {
 
   return (
     <div className="min-h-screen bg-slate-50 px-6 py-5">
-      <header className="mb-4 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-lg font-bold tracking-tight text-navy">Governance at Scale</h1>
-          <p className="text-xs text-slate-500">
-            Every cell is a complete governance model. One orchestration run fills one cell in minutes.
-          </p>
+      <header className="mb-4">
+        <div className="mb-1 text-[11px] font-bold uppercase tracking-[0.2em] text-utah-orange">
+          The problem, at scale
         </div>
-        <NavTabs active="scale" />
+        <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900">
+          Most government functions are ungoverned.
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">
+          Every cell is a complete governance model. One orchestration run fills one cell in minutes.
+        </p>
       </header>
 
       {/* Counter */}
