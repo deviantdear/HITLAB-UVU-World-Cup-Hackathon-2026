@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState, useEffect } from "react";
 import type {
   AgentRunStatus,
   Citation,
@@ -27,6 +27,13 @@ export interface ReplayState {
   sourcesByAgent: Record<string, Citation[]>;
   fields: Record<string, ReplayFieldState>;
   publishedVersion: number | null;
+}
+
+/** A point where the replay pauses for a human decision before continuing. */
+export interface ReplayGate {
+  at: number; // pause when the timeline reaches this ms
+  resumeAt: number; // jump here on release (applies the human_review event instantly)
+  label: string;
 }
 
 function emptyState(): ReplayState {
@@ -98,37 +105,41 @@ export interface UseReplay {
   duration: number;
   playing: boolean;
   speed: number;
-  appliedCount: number;
+  pendingGate: ReplayGate | null;
   setSpeed: (s: number) => void;
   play: () => void;
   pause: () => void;
   toggle: () => void;
   restart: () => void;
   seek: (ms: number) => void;
+  release: () => void;
 }
 
 /**
- * Drives the "watch it build" replay. Folds the event log up to a moving `cursor`
- * (ms). Pure derivation each frame keeps pause / resume / seek / speed bug-free.
+ * Drives the "watch it build" replay. Folds the event log up to a moving `cursor` (ms).
+ * Optional `gates` pause the timeline for a human decision (the on-stage approval moment).
  */
 export function useReplay(
   events: OrchestrationEvent[],
-  opts?: { autoPlay?: boolean },
+  opts?: { autoPlay?: boolean; gates?: ReplayGate[] },
 ): UseReplay {
-  const sorted = useMemo(
-    () => [...events].sort((a, b) => a.t - b.t),
-    [events],
-  );
+  const sorted = useMemo(() => [...events].sort((a, b) => a.t - b.t), [events]);
   const duration = sorted.length ? sorted[sorted.length - 1].t : 0;
+  const gates = useMemo(
+    () => [...(opts?.gates ?? [])].sort((a, b) => a.at - b.at),
+    [opts?.gates],
+  );
 
   const [cursor, setCursor] = useState(0);
   const [playing, setPlaying] = useState(opts?.autoPlay ?? false);
   const [speed, setSpeed] = useState(1);
-  const [nonce, setNonce] = useState(0); // forces the loop to re-anchor on seek/restart
+  const [nonce, setNonce] = useState(0);
+  const [pendingGate, setPendingGate] = useState<ReplayGate | null>(null);
 
   const rafRef = useRef<number | null>(null);
   const startRealRef = useRef(0);
   const baseElapsedRef = useRef(0);
+  const releasedRef = useRef<Set<number>>(new Set());
 
   useEffect(() => {
     if (!playing) return;
@@ -136,8 +147,16 @@ export function useReplay(
     baseElapsedRef.current = cursor;
     const tick = () => {
       const elapsed =
-        baseElapsedRef.current +
-        (performance.now() - startRealRef.current) * speed;
+        baseElapsedRef.current + (performance.now() - startRealRef.current) * speed;
+
+      const gate = gates.find((g) => !releasedRef.current.has(g.at) && g.at <= elapsed);
+      if (gate) {
+        setCursor(gate.at);
+        setPendingGate(gate);
+        setPlaying(false);
+        return;
+      }
+
       if (elapsed >= duration) {
         setCursor(duration);
         setPlaying(false);
@@ -150,9 +169,9 @@ export function useReplay(
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-    // cursor intentionally excluded: re-anchored via baseElapsedRef on (re)start
+    // cursor intentionally excluded; re-anchored via refs on (re)start
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playing, speed, duration, nonce]);
+  }, [playing, speed, duration, nonce, gates]);
 
   const play = useCallback(() => {
     setCursor((c) => (c >= duration ? 0 : c));
@@ -161,6 +180,7 @@ export function useReplay(
   }, [duration]);
 
   const pause = useCallback(() => setPlaying(false), []);
+
   const toggle = useCallback(() => {
     setPlaying((p) => {
       if (!p) {
@@ -172,6 +192,8 @@ export function useReplay(
   }, [duration]);
 
   const restart = useCallback(() => {
+    releasedRef.current = new Set();
+    setPendingGate(null);
     setCursor(0);
     setPlaying(true);
     setNonce((n) => n + 1);
@@ -179,7 +201,21 @@ export function useReplay(
 
   const seek = useCallback((ms: number) => {
     setCursor(Math.max(0, ms));
+    setPendingGate(null);
     setNonce((n) => n + 1);
+  }, []);
+
+  /** Release the current gate: record approval and resume past it. */
+  const release = useCallback(() => {
+    setPendingGate((g) => {
+      if (g) {
+        releasedRef.current.add(g.at);
+        setCursor(g.resumeAt);
+        setPlaying(true);
+        setNonce((n) => n + 1);
+      }
+      return null;
+    });
   }, []);
 
   const appliedCount = useMemo(() => {
@@ -196,12 +232,13 @@ export function useReplay(
     duration,
     playing,
     speed,
-    appliedCount,
+    pendingGate,
     setSpeed,
     play,
     pause,
     toggle,
     restart,
     seek,
+    release,
   };
 }
