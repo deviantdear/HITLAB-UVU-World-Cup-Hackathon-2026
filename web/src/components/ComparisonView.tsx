@@ -42,7 +42,18 @@ export function ComparisonView() {
   const inconsistencies = COMPARE.filter((r) => r.diverge).length;
 
   return (
-    <div className="mx-auto max-w-[1080px] px-6 pb-16 pt-8">
+    <div className="mx-auto max-w-[1080px] px-6 pb-16 pt-7">
+      <header className="mb-4 flex items-center justify-between gap-5">
+        <div className="max-w-[600px]">
+          <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-utah-orange">Across jurisdictions</div>
+          <h2 className="font-display text-[clamp(24px,3vw,34px)] font-extrabold leading-tight tracking-tight text-slate-900">
+            Same data. Unequal rights.
+          </h2>
+        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/Privacy-Exchange.png" alt="" className="hidden h-auto w-[120px] flex-none sm:block" />
+      </header>
+
       {/* Banner */}
       {harmonized ? (
         <div className="mb-2 flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4">
@@ -71,13 +82,9 @@ export function ComparisonView() {
         </div>
       )}
 
-      {/* Illustration + eyebrow */}
-      <div className="my-4 flex flex-col items-center">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/Privacy-Exchange.png" alt="" className="mb-1 h-auto w-32" />
-        <div className="text-center text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">
-          Business License · “Business License Application”
-        </div>
+      {/* Record label */}
+      <div className="my-4 text-center text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">
+        Business License · “Business License Application”
       </div>
 
       {/* Comparison table */}

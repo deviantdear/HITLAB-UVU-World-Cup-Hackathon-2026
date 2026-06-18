@@ -28,7 +28,7 @@ const META: Record<AppView, { title: string; sub: string }> = {
   generate: { title: "Generate a model", sub: "Ten agents build a governance model live" },
   modelDoc: { title: "Governance model", sub: "Human-approved · published v1" },
   models: { title: "Published models", sub: "Human-approved governance models" },
-  compare: { title: "Compare & harmonize", sub: "The same function across jurisdictions" },
+  compare: { title: "Equal data rights", sub: "The same function, governed across jurisdictions" },
   versions: { title: "Version history", sub: "Legislative change → human-approved updates" },
   redaction: { title: "Public-records release", sub: "What's disclosed when the public requests a record" },
   sedi: { title: "SEDI identity", sub: "Where governance connects to verifiable identity" },
