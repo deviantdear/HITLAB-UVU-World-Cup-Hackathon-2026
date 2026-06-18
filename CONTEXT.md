@@ -164,6 +164,11 @@ _(recorded as we grill — see docs/adr/ for the load-bearing ones)_
      detail view (model build / Versions / Compare).
    - The **Consistency Scan is a queue action** ("Run scan"), **not a first-class view** — it bulk-flags
      inconsistencies across jurisdictions into the queue (equal-rights detection *at scale*).
+   - **In-generation conflicts resolve inline** via a modal (e.g., Records vs Data Minimization on the
+     SSN, citing §81-2-303(4)) so the officer never leaves the build → publishes in-context. The queue
+     is reserved for asynchronous sources (legislative changes, cross-jurisdiction findings).
+   - **Public-records release / redaction** is a first-class view: the Redaction Agent shows the
+     public-release copy with DOB/address/SSN withheld + citations (extra-points workflow).
 
 ## SEDI / KERI (glossary, for the bonus layer)
 - **KERI** — Key Event Receipt Infrastructure (Samuel M. Smith): decentralized identity rooted in
