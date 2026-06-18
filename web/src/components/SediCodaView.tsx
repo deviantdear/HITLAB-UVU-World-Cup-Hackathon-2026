@@ -1,119 +1,179 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+
 interface Layer {
-  tag: string;
+  n: string;
   title: string;
-  blurb: string;
-  items: string[];
-  ring: string;
-  chip: string;
-  connector?: string;
+  sub: string;
+  desc: string;
+  color: string;
+  bg: string;
 }
 
 const LAYERS: Layer[] = [
   {
-    tag: "Policy",
+    n: "1",
     title: "Governance Models",
-    blurb: "What data may be collected, who may access it, how it's classified, and how long it's kept.",
-    items: ["Marriage License", "Business License", "+ every government function"],
-    ring: "border-navy bg-navy text-white",
-    chip: "bg-white/15 text-white",
-    connector: "defines the rules for",
+    sub: "Policy layer",
+    desc: "What data exists, who may access it, and how long it is kept.",
+    color: "#0B3D6B",
+    bg: "#EAF1F8",
   },
   {
-    tag: "Enforcement",
+    n: "2",
     title: "SEDI / KERI — Verifiable Digital Identity",
-    blurb:
-      "The citizen proves a claim with a verifiable credential — minimal disclosure, cryptographic provenance, controlled by the individual and portable across every entity.",
-    items: ['Proves "over 18"', 'Proves "identity verified"', "Government stores nothing extra"],
-    ring: "border-violet-400 bg-violet-50 text-violet-900",
-    chip: "bg-violet-100 text-violet-700",
-    connector: "powers",
+    sub: "Trust layer",
+    desc: "The citizen proves a claim with a verifiable credential — minimal disclosure, no central honeypot.",
+    color: "#7C3AED",
+    bg: "#F5F0FF",
   },
   {
-    tag: "Applications",
+    n: "3",
     title: "Agentic Applications",
-    blurb: "The same governance + identity foundation powers many downstream government uses.",
-    items: ["Healthcare Authorization", "Public-Records Release", "Privacy Notices"],
-    ring: "border-sky-300 bg-sky-50 text-sky-900",
-    chip: "bg-sky-100 text-sky-700",
+    sub: "Service layer",
+    desc: "Healthcare Authorization · Public-Records Release · Privacy Notices.",
+    color: "#0EA5E9",
+    bg: "#EFF8FF",
   },
 ];
 
+const TODAY = [
+  ["①", "Clerk collects the SSN at the counter to verify identity."],
+  ["②", "SSN is stored in an exempt record held by the county."],
+  ["③", "Ongoing privacy & breach risk for as long as the record exists."],
+];
+const SEDI = [
+  ["①", "Citizen presents a verifiable credential directly to DHHS / ORS."],
+  ["②", "The clerk never collects or stores the SSN — minimal disclosure."],
+  ["③", "Risk eliminated — there is no stored secret to breach."],
+];
+
 export function SediCodaView() {
+  const [view, setView] = useState<"today" | "sedi">("today");
+
   return (
-    <div className="min-h-screen bg-slate-50 px-6 py-5">
-      <header className="mb-4">
-        <div className="mb-1 text-[11px] font-bold uppercase tracking-[0.2em] text-utah-orange">
+    <div className="mx-auto max-w-[1080px] px-6 pb-16 pt-8">
+      {/* Header */}
+      <div className="mb-7 flex flex-col items-center text-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/ODPImage2.png" alt="" className="mb-1.5 h-auto w-[190px]" />
+        <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-utah-orange">
           The closing vision
         </div>
-        <h1 className="font-display text-2xl font-extrabold tracking-tight text-slate-900">
+        <h2 className="font-display text-[clamp(24px,3vw,34px)] font-extrabold leading-tight tracking-tight text-slate-900">
           Governance models connect to verifiable identity.
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Governance models are the policy layer. State-Endorsed Digital Identity (SEDI) is how that
-          policy is enforced — minimizing the data government ever holds.
-        </p>
-      </header>
-
-      {/* Layered architecture */}
-      <div className="mb-5 space-y-2">
-        {LAYERS.map((l, i) => (
-          <div key={l.title}>
-            <div className={`rounded-xl border-2 p-4 ${l.ring}`}>
-              <div className="flex items-center gap-2">
-                <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${l.chip}`}>
-                  {l.tag}
-                </span>
-                <h2 className="text-base font-bold">{l.title}</h2>
-              </div>
-              <p className="mt-1.5 text-sm opacity-90">{l.blurb}</p>
-              <div className="mt-2.5 flex flex-wrap gap-1.5">
-                {l.items.map((it) => (
-                  <span key={it} className={`rounded-md px-2 py-1 text-[11px] font-medium ${l.chip}`}>
-                    {it}
-                  </span>
-                ))}
-              </div>
-            </div>
-            {l.connector ? (
-              <div className="flex items-center justify-center py-1 text-[11px] font-medium uppercase tracking-wide text-slate-400">
-                ↓ {l.connector}
-              </div>
-            ) : null}
-          </div>
-        ))}
+        </h2>
       </div>
 
-      {/* SSN before / after */}
-      <div className="mb-5">
-        <h3 className="mb-2 text-sm font-bold text-navy">
-          A concrete example — the marriage-license Social Security Number
-        </h3>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <div className="rounded-xl border border-rose-200 bg-rose-50 p-4">
-            <div className="text-[11px] font-bold uppercase tracking-wide text-rose-600">Today</div>
-            <p className="mt-1.5 text-sm text-rose-900">
-              The clerk collects the SSN; it lives in an exempt record under Utah Code § 81-2-303(4),
-              creating an ongoing privacy and breach risk for as long as it is retained.
-            </p>
+      <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[1.1fr_1fr]">
+        {/* Architecture layers */}
+        <div>
+          {LAYERS.map((l, i) => (
+            <div key={l.title}>
+              <div
+                className="rounded-xl border border-slate-200 bg-white p-[15px] shadow-sm"
+                style={{ borderLeft: `5px solid ${l.color}` }}
+              >
+                <div className="flex items-center gap-3">
+                  <span
+                    className="grid h-[34px] w-[34px] flex-none place-items-center rounded-[9px] font-display text-[15px] font-extrabold"
+                    style={{ background: l.bg, color: l.color }}
+                  >
+                    {l.n}
+                  </span>
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-baseline gap-2">
+                      <span className="font-display text-[15px] font-extrabold text-slate-900">{l.title}</span>
+                      <span
+                        className="text-[10px] font-bold uppercase tracking-[0.08em]"
+                        style={{ color: l.color }}
+                      >
+                        {l.sub}
+                      </span>
+                    </div>
+                    <div className="mt-0.5 text-[12.5px] leading-snug text-slate-500">{l.desc}</div>
+                  </div>
+                </div>
+              </div>
+              {i < LAYERS.length - 1 ? (
+                <div className="flex justify-center py-1.5 text-base text-slate-300">↓</div>
+              ) : null}
+            </div>
+          ))}
+        </div>
+
+        {/* Before / after */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-[18px] shadow-sm">
+          <div className="mb-2.5 text-[10.5px] font-bold uppercase tracking-[0.12em] text-slate-400">
+            Real example · the marriage-license SSN
           </div>
-          <div className="rounded-xl border-2 border-violet-300 bg-violet-50 p-4">
-            <div className="text-[11px] font-bold uppercase tracking-wide text-violet-600">With SEDI</div>
-            <p className="mt-1.5 text-sm text-violet-900">
-              The citizen presents a verifiable credential directly to DHHS/ORS. The clerk never
-              collects or stores the SSN — the secondary-classification risk is eliminated entirely.
-            </p>
+          <div className="mb-4 flex gap-2">
+            <button
+              onClick={() => setView("today")}
+              className={`rounded-lg border px-3 py-1.5 text-[13px] font-semibold ${
+                view === "today" ? "border-rose-200 bg-rose-50 text-rose-700" : "border-slate-200 bg-white text-slate-500"
+              }`}
+            >
+              Today
+            </button>
+            <button
+              onClick={() => setView("sedi")}
+              className={`rounded-lg border px-3 py-1.5 text-[13px] font-semibold ${
+                view === "sedi" ? "border-violet-200 bg-violet-50 text-violet-700" : "border-slate-200 bg-white text-slate-500"
+              }`}
+            >
+              With SEDI
+            </button>
           </div>
+
+          {view === "today" ? (
+            <div>
+              <div className="flex flex-col gap-2.5">
+                {TODAY.map(([n, text]) => (
+                  <div key={n} className="flex items-start gap-3 rounded-[10px] border border-rose-200 bg-rose-50 px-3.5 py-3">
+                    <span className="flex-none text-[15px]">{n}</span>
+                    <div className="text-[13px] leading-snug text-rose-900">{text}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3.5 rounded-[9px] bg-rose-50 p-2.5 text-center text-[12px] font-bold text-rose-700">
+                Risk: a standing honeypot of sensitive data
+              </div>
+            </div>
+          ) : (
+            <div>
+              <div className="flex flex-col gap-2.5">
+                {SEDI.map(([n, text]) => (
+                  <div key={n} className="flex items-start gap-3 rounded-[10px] border border-violet-200 bg-violet-50 px-3.5 py-3">
+                    <span className="flex-none text-[15px]">{n}</span>
+                    <div className="text-[13px] leading-snug text-violet-900">{text}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3.5 rounded-[9px] bg-violet-50 p-2.5 text-center text-[12px] font-bold text-violet-700">
+                Result: the data the government never holds can never leak
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Closing thesis */}
-      <div className="rounded-xl bg-navy px-5 py-5 text-center">
-        <p className="text-lg font-bold text-white">
-          Equal data rights under the law — at a scale humans can&apos;t reach alone.
-        </p>
-        <p className="mt-1 text-xs text-white/60">
-          Standardized governance + verifiable identity + AI orchestration, with a human in the loop.
-        </p>
+      {/* Thesis */}
+      <div
+        className="relative mt-8 overflow-hidden rounded-2xl px-7 py-9 text-center text-white"
+        style={{ background: "linear-gradient(135deg,#0B3D6B,#082A4A)" }}
+      >
+        <div className="relative mx-auto max-w-[760px] font-display text-[clamp(22px,3.2vw,34px)] font-black leading-[1.15] tracking-tight">
+          “Equal data rights under the law — at a scale humans can’t reach alone.”
+        </div>
+        <Link
+          href="/"
+          className="relative mt-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-[22px] py-2.5 text-sm font-bold text-white hover:bg-white/20"
+        >
+          ↺ Restart the demo
+        </Link>
       </div>
     </div>
   );

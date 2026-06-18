@@ -13,7 +13,7 @@ export const STEPS: Step[] = [
   { key: "review", n: "04", label: "Review", href: "/review" },
   { key: "model", n: "05", label: "Model", href: "/model" },
   { key: "compare", n: "06", label: "Equal Rights", href: "/compare" },
-  { key: "maintenance", n: "07", label: "Maintenance", href: "/maintenance" },
+  { key: "maintenance", n: "07", label: "Versioning", href: "/maintenance" },
   { key: "sedi", n: "08", label: "SEDI", href: "/sedi" },
 ];
 
