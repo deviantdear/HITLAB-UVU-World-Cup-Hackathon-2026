@@ -1,0 +1,27 @@
+{
+  "_comment": "SAMPLE scale grid: entities (rows) × functions (columns). `cells` lists only the non-empty cells; every other entity×function pair renders as 'ready' (ungoverned) — that emptiness IS the problem statement. totalEstimate is an illustrative count of governance models needed statewide.",
+  "totalEstimate": 14000,
+  "entities": [
+    { "name": "Utah County (unincorporated)", "governmentUnit": "County" },
+    { "name": "Orem City", "governmentUnit": "Municipality" },
+    { "name": "Provo City", "governmentUnit": "Municipality" },
+    { "name": "Salt Lake County", "governmentUnit": "County" },
+    { "name": "Alpine School District", "governmentUnit": "PublicEducation" },
+    { "name": "Utah DHHS", "governmentUnit": "State" }
+  ],
+  "functions": [
+    { "id": "marriage-license", "title": "Marriage License" },
+    { "id": "business-license", "title": "Business License" },
+    { "id": "dog-license", "title": "Dog License" },
+    { "id": "building-permit", "title": "Building Permit" },
+    { "id": "voter-registration", "title": "Voter Registration" },
+    { "id": "death-certificate", "title": "Death Certificate" }
+  ],
+  "cells": [
+    { "entity": "Utah County (unincorporated)", "functionId": "marriage-license", "state": "published", "version": 1 },
+    { "entity": "Utah County (unincorporated)", "functionId": "business-license", "state": "published", "version": 1 },
+    { "entity": "Orem City", "functionId": "business-license", "state": "published", "version": 1 },
+    { "entity": "Salt Lake County", "functionId": "marriage-license", "state": "published", "version": 1 },
+    { "entity": "Orem City", "functionId": "marriage-license", "state": "generating" }
+  ]
+}

@@ -21,6 +21,14 @@ const copies = [
     resolve(repo, "data/business-license/comparison.sample.json"),
     resolve(web, "src/data/businessLicenseComparison.json"),
   ],
+  [
+    resolve(repo, "data/marriage-license/maintenance.sample.json"),
+    resolve(web, "src/data/marriageLicenseMaintenance.json"),
+  ],
+  [
+    resolve(repo, "data/scale/grid.sample.json"),
+    resolve(web, "src/data/scaleGrid.json"),
+  ],
 ];
 
 for (const [from, to] of copies) {

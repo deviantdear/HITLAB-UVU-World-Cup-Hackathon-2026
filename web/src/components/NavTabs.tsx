@@ -3,9 +3,11 @@ import Link from "next/link";
 const TABS = [
   { href: "/", key: "demo", label: "Orchestration" },
   { href: "/compare", key: "compare", label: "Equal Data Rights" },
+  { href: "/maintenance", key: "maintenance", label: "Maintenance" },
+  { href: "/scale", key: "scale", label: "Scale" },
 ];
 
-export function NavTabs({ active }: { active: "demo" | "compare" }) {
+export function NavTabs({ active }: { active: string }) {
   return (
     <nav className="flex items-center gap-1 rounded-full border border-slate-200 bg-white p-0.5">
       {TABS.map((t) => (

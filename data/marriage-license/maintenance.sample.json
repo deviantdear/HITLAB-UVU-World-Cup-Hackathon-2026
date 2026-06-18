@@ -1,0 +1,34 @@
+{
+  "_comment": "SAMPLE maintenance scenario: a legislative change triggers an agent-proposed update to the published marriage-license model. The bill (H.B. 412) is HYPOTHETICAL / ILLUSTRATIVE for the demo and is labeled as such everywhere it appears. Real cites (§81-2-303) stay accurate. Maps to the schema's ChangeEntry / FieldChange concept.",
+  "functionId": "marriage-license",
+  "title": "Marriage License",
+  "entityName": "Utah County",
+  "fromVersion": 1,
+  "toVersion": 2,
+  "trigger": {
+    "label": "Utah H.B. 412 — Vital Records Modernization Act",
+    "illustrative": true,
+    "summary": "Adds a mandatory public-release redaction step for sensitive identifiers and an archival transfer schedule for permanent vital records.",
+    "detectedBy": "legal_authority"
+  },
+  "changes": [
+    {
+      "fieldKey": "secondaryClassification",
+      "label": "Secondary Classification",
+      "before": "Exempt — Utah Code § 81-2-303(4): social security numbers may not be recorded on the marriage license but may be provided to DHHS or ORS for child support administration.",
+      "after": "Exempt — Utah Code § 81-2-303(4). NEW: the SSN and date of birth must be redacted before any public release of the record (H.B. 412 § 3).",
+      "rationale": "H.B. 412 § 3 adds a mandatory redaction step for sensitive identifiers prior to public release.",
+      "agent": "redaction",
+      "citation": { "label": "H.B. 412 § 3 (illustrative)", "source": "utah_code" }
+    },
+    {
+      "fieldKey": "retentionAndDisposition",
+      "label": "Retention & Disposition",
+      "before": "Retain permanently",
+      "after": "Retain permanently by the county clerk; transfer a preservation copy to State Archives after 75 years (H.B. 412 § 5).",
+      "rationale": "H.B. 412 § 5 establishes an archival transfer schedule for permanent vital records.",
+      "agent": "retention",
+      "citation": { "label": "H.B. 412 § 5 (illustrative)", "source": "utah_code" }
+    }
+  ]
+}
