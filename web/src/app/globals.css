@@ -27,3 +27,5 @@ body {
   color: var(--foreground);
   font-family: var(--font-source), -apple-system, BlinkMacSystemFont, sans-serif;
 }
+
+/* Deploy: project Root Directory set to /web — git auto-deploys build from here. */
