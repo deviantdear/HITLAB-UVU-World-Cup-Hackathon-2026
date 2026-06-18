@@ -39,6 +39,7 @@ function Marker({ unequal }: { unequal: boolean }) {
 
 export function ComparisonView() {
   const [harmonized, setHarmonized] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
   const inconsistencies = COMPARE.filter((r) => r.diverge).length;
 
   return (
@@ -46,7 +47,7 @@ export function ComparisonView() {
       <header className="mb-4 flex items-center justify-between gap-5">
         <div className="max-w-[600px]">
           <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-utah-orange">Across jurisdictions</div>
-          <h2 className="font-display text-[clamp(24px,3vw,34px)] font-extrabold leading-tight tracking-tight text-slate-900">
+          <h2 className="text-balance font-display text-[clamp(24px,3vw,34px)] font-extrabold leading-tight tracking-tight text-slate-900">
             Same data. Unequal rights.
           </h2>
         </div>
@@ -68,16 +69,11 @@ export function ComparisonView() {
           </div>
         </div>
       ) : (
-        <div className="mb-2 flex items-center gap-3 rounded-xl border border-amber-200 bg-orange-50 px-5 py-4">
+        <div className="mb-2 flex items-center gap-3 rounded-xl border border-amber-200 bg-orange-50 px-5 py-3.5">
           <span className="text-xl">⚠</span>
-          <div>
-            <div className="font-display text-[17px] font-extrabold text-orange-800">
-              Same personal data, unequal rights
-            </div>
-            <div className="text-[12.5px] text-amber-800">
-              <strong>{inconsistencies} inconsistencies found</strong> between two entities governing the
-              identical record.
-            </div>
+          <div className="text-[13.5px] text-amber-900">
+            <strong>{inconsistencies} inconsistencies found</strong> between two entities governing the
+            identical record.
           </div>
         </div>
       )}
@@ -140,13 +136,16 @@ export function ComparisonView() {
           >
             ↺ Reset demo
           </button>
+        ) : dismissed ? (
+          <div className="flex flex-none items-center gap-3">
+            <span className="text-[12.5px] font-semibold text-white/80">Dismissed — flagged for policy review.</span>
+            <button onClick={() => setDismissed(false)} className="rounded-[10px] border border-white/30 px-4 py-[11px] text-[13px] font-bold text-white hover:bg-white/10">Undo</button>
+          </div>
         ) : (
-          <button
-            onClick={() => setHarmonized(true)}
-            className="flex-none rounded-[10px] bg-utah-orange px-[22px] py-[13px] font-display text-sm font-extrabold text-white hover:brightness-105"
-          >
-            Apply to both →
-          </button>
+          <div className="flex flex-none items-center gap-2">
+            <button onClick={() => setDismissed(true)} className="rounded-[10px] border border-white/30 px-4 py-[13px] text-[13px] font-bold text-white hover:bg-white/10">Dismiss</button>
+            <button onClick={() => setHarmonized(true)} className="rounded-[10px] bg-utah-orange px-[22px] py-[13px] font-display text-sm font-extrabold text-white hover:brightness-105">Apply to both →</button>
+          </div>
         )}
       </div>
 
