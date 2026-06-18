@@ -86,7 +86,7 @@ export function WorkbenchApp() {
             <Dashboard reviewerName={reviewerName} reviewCount={REVIEW_QUEUE.length} onNavigate={setView} onOpenItem={openItem} />
           )}
           {view === "inventory" && <InventoryTree onGenerate={() => setView("generate")} />}
-          {view === "generate" && <GenerateView onFlagged={() => setView("reviewDetail")} />}
+          {view === "generate" && <GenerateView onDone={() => setView("models")} />}
           {view === "review" && <ReviewQueue onOpen={openItem} />}
           {view === "reviewDetail" && <ReviewView />}
           {view === "models" && <ModelDocumentView />}
