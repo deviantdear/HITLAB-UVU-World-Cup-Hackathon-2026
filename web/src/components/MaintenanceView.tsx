@@ -17,7 +17,7 @@ const DIFF: Diff[] = [
     before: "Retain permanently in the office of the County Clerk.",
     after: "Retain 75 years, then transfer to the Utah State Archives.",
     agent: "Retention",
-    cite: "Utah H.B. ___ (illustrative)",
+    cite: "Utah H.B. 412 (illustrative)",
     why: "New schedule caps active retention and routes long-term custody to Archives.",
   },
   {
@@ -56,7 +56,7 @@ export function MaintenanceView() {
         <div className="grid h-[38px] w-[38px] flex-none place-items-center rounded-[10px] bg-violet-600 text-lg text-white">📡</div>
         <div className="flex-1">
           <div className="font-display text-[15px] font-extrabold text-violet-800">
-            New legislation detected — Utah H.B. ___{" "}
+            New legislation detected — Utah H.B. 412{" "}
             <span className="ml-1 rounded-full bg-violet-100 px-2 py-0.5 align-middle text-[11px] font-bold text-violet-700">ILLUSTRATIVE</span>
           </div>
           <div className="text-[12.5px] text-violet-900/70">

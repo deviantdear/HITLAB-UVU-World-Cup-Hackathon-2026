@@ -62,7 +62,7 @@ export function ReviewQueue({
               : "border-violet-300 bg-white text-violet-700 hover:bg-violet-50"
           }`}
         >
-          {scanning ? "Scanning all jurisdictions…" : scanned ? "Re-run consistency scan" : "Run consistency scan"}
+          {scanning ? "Scanning all jurisdictions…" : scanned ? "Re-run scan" : "Run scan"}
         </button>
       </div>
 

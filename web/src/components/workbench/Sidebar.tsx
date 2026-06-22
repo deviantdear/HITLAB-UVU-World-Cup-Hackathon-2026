@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useState } from "react";
 import type { WorkbenchView } from "@/lib/workbench";
 
 interface NavItem {
@@ -52,12 +53,14 @@ export function Sidebar({
   view,
   onNavigate,
   reviewerName,
+  onNameChange,
   reviewCount,
   governedCount,
 }: {
   view: WorkbenchView;
   onNavigate: (v: WorkbenchView) => void;
   reviewerName: string;
+  onNameChange: (name: string) => void;
   reviewCount: number;
   governedCount: number;
 }) {
@@ -68,6 +71,30 @@ export function Sidebar({
       .slice(0, 2)
       .join("")
       .toUpperCase() || "CB";
+
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(reviewerName);
+  const skipCommit = useRef(false); // set when cancelling, so the unmount-blur doesn't save
+
+  const startEdit = () => {
+    setDraft(reviewerName);
+    skipCommit.current = false;
+    setEditing(true);
+  };
+  const commit = () => {
+    if (skipCommit.current) {
+      skipCommit.current = false;
+      setEditing(false);
+      return;
+    }
+    const v = draft.trim();
+    if (v) onNameChange(v);
+    setEditing(false);
+  };
+  const cancel = () => {
+    skipCommit.current = true;
+    setEditing(false);
+  };
 
   return (
     <aside
@@ -103,24 +130,48 @@ export function Sidebar({
         {NAV.filter((n) => n.group === "intelligence").map((item) => (
           <NavRow key={item.view} item={item} active={view === item.view} onClick={() => onNavigate(item.view)} />
         ))}
-
-        <div className="flex-1" />
-        <NavRow
-          item={{ view: "settings", group: "workspace", label: "Settings", icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" /></svg> }}
-          active={view === "settings"}
-          onClick={() => onNavigate("settings")}
-        />
       </nav>
 
-      <div className="flex items-center gap-2.5 border-t border-white/10 px-4 py-3">
-        <span className="grid h-[34px] w-[34px] flex-none place-items-center rounded-full bg-gradient-to-br from-utah-orange to-utah-orange-deep font-display text-[13px] font-extrabold text-white">
-          {initials}
-        </span>
-        <div className="min-w-0 flex-1 leading-tight">
-          <div className="truncate text-[12.5px] font-bold text-white">{reviewerName}</div>
-          <div className="text-[10.5px] text-white/55">County Privacy Officer</div>
-        </div>
-        <span className="h-[7px] w-[7px] flex-none rounded-full bg-emerald-400 shadow-[0_0_0_3px_rgba(16,185,129,0.18)]" />
+      {/* Reviewer identity — click to edit */}
+      <div className="border-t border-white/10 p-2">
+        {editing ? (
+          <div className="flex items-center gap-2.5 px-2 py-1.5">
+            <span className="grid h-[34px] w-[34px] flex-none place-items-center rounded-full bg-gradient-to-br from-utah-orange to-utah-orange-deep font-display text-[13px] font-extrabold text-white">
+              {initials}
+            </span>
+            <input
+              autoFocus
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") commit();
+                else if (e.key === "Escape") cancel();
+              }}
+              onBlur={commit}
+              placeholder="Your name"
+              aria-label="Reviewer name"
+              className="min-w-0 flex-1 rounded-md border border-white/25 bg-white/10 px-2 py-1 text-[12.5px] font-semibold text-white placeholder-white/40 outline-none focus:border-utah-orange"
+            />
+          </div>
+        ) : (
+          <button
+            onClick={startEdit}
+            title="Edit reviewer identity"
+            className="group flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-white/10"
+          >
+            <span className="grid h-[34px] w-[34px] flex-none place-items-center rounded-full bg-gradient-to-br from-utah-orange to-utah-orange-deep font-display text-[13px] font-extrabold text-white">
+              {initials}
+            </span>
+            <div className="min-w-0 flex-1 leading-tight">
+              <div className="truncate text-[12.5px] font-bold text-white">{reviewerName}</div>
+              <div className="text-[10.5px] text-white/55">County Privacy Officer</div>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-none text-white/35 transition-colors group-hover:text-white/70">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+            </svg>
+          </button>
+        )}
       </div>
     </aside>
   );

@@ -1,5 +1,5 @@
-import { WorkbenchApp } from "@/components/workbench/WorkbenchApp";
+import { DemoGate } from "@/components/DemoGate";
 
 export default function Home() {
-  return <WorkbenchApp />;
+  return <DemoGate />;
 }

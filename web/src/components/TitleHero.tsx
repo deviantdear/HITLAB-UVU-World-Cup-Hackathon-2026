@@ -1,9 +1,9 @@
 import Link from "next/link";
 
-export function TitleHero() {
+export function TitleHero({ onBegin }: { onBegin?: () => void } = {}) {
   return (
     <div
-      className="relative flex min-h-[calc(100vh-62px)] flex-col items-center justify-center overflow-hidden px-6 pb-[72px] pt-14 text-center text-white"
+      className={`relative flex ${onBegin ? "min-h-screen" : "min-h-[calc(100vh-62px)]"} flex-col items-center justify-center overflow-hidden px-6 pb-[72px] pt-14 text-center text-white`}
       style={{ background: "radial-gradient(120% 90% at 50% -10%, #0B3D6B 0%, #082A4A 70%)" }}
     >
       <div className="relative flex max-w-[920px] flex-col items-center">
@@ -53,12 +53,21 @@ export function TitleHero() {
           <Stat value="almost none" label="fully modeled today" accent />
         </div>
 
-        <Link
-          href="/scale"
-          className="inline-flex items-center gap-2.5 rounded-full bg-utah-orange px-8 py-[15px] font-display text-[17px] font-extrabold text-white shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-transform hover:scale-[1.02]"
-        >
-          Begin <span className="text-[19px]">→</span>
-        </Link>
+        {onBegin ? (
+          <button
+            onClick={onBegin}
+            className="inline-flex items-center gap-2.5 rounded-full bg-utah-orange px-8 py-[15px] font-display text-[17px] font-extrabold text-white shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-transform hover:scale-[1.02]"
+          >
+            Begin <span className="text-[19px]">→</span>
+          </button>
+        ) : (
+          <Link
+            href="/scale"
+            className="inline-flex items-center gap-2.5 rounded-full bg-utah-orange px-8 py-[15px] font-display text-[17px] font-extrabold text-white shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-transform hover:scale-[1.02]"
+          >
+            Begin <span className="text-[19px]">→</span>
+          </Link>
+        )}
       </div>
     </div>
   );

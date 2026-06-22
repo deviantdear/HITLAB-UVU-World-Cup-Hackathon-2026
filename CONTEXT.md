@@ -144,7 +144,7 @@ _(recorded as we grill — see docs/adr/ for the load-bearing ones)_
    + Tailwind + shadcn + React Flow + Framer Motion, Vercel), `/data` (corpus + committed golden runs).
    **Replay-event-log demo architecture**: frontend replays `events.json` by default (API-failure-proof);
    a "Live" toggle calls the engine only for the business-license live-gen, cached run one key away.
-   No database — static JSON. See [docs/PLAN.md](docs/PLAN.md) for the hour-by-hour.
+   No database — static JSON.
 9. **UI pivot → "Utah Privacy Workbench" (operational application).** Reframed from a linear
    presentation stepper into a **working application a privacy/records officer uses** — a dashboard +
    **review queue** + the existing screens as detail views. The five beats from #4 are unchanged; what

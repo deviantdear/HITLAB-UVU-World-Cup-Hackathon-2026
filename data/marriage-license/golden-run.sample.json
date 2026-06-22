@@ -41,12 +41,17 @@
     { "t": 9000, "type": "agent_status", "agent": "decision_point", "status": "working" },
     { "t": 9400, "type": "agent_status", "agent": "decision_point", "status": "done", "message": "Identified decision point: Approve or deny license (licensing)" },
 
-    { "t": 9600, "type": "agent_status", "agent": "quality_assurance", "status": "working", "message": "Reviewing for accuracy, consistency, conflicts, and human-review needs" },
-    { "t": 10400, "type": "qa_flag", "path": "transactions[0].records[0].fields.secondaryClassification", "fieldKey": "secondaryClassification", "reason": "SSN is the highest-sensitivity element and the §81-2-303(4) handling rule is nuanced. Confidence 0.71 — recommend human review before publish." },
-    { "t": 10800, "type": "agent_status", "agent": "quality_assurance", "status": "flagged" },
+    { "t": 9500, "type": "agent_status", "agent": "redaction", "status": "working", "message": "Determining what must be redacted before public release" },
+    { "t": 9900, "type": "agent_read_source", "agent": "redaction", "citation": { "label": "Utah Code § 63G-2-302", "source": "utah_code", "url": "https://le.utah.gov/xcode/Title63G/Chapter2/63G-2-S302.html" } },
+    { "t": 10300, "type": "agent_status", "agent": "redaction", "status": "done", "message": "Redact SSN, date of birth, and address before any public release" },
 
-    { "t": 12000, "type": "human_review", "path": "transactions[0].records[0].fields.secondaryClassification", "fieldKey": "secondaryClassification", "action": "approved", "reviewedBy": "Chris B., Privacy Officer" },
-    { "t": 12600, "type": "model_published", "functionId": "marriage-license", "version": 1 }
+    { "t": 10500, "type": "agent_status", "agent": "quality_assurance", "status": "working", "message": "Reviewing for accuracy, consistency, conflicts, and human-review needs" },
+    { "t": 11300, "type": "qa_flag", "path": "transactions[0].records[0].fields.secondaryClassification", "fieldKey": "secondaryClassification", "reason": "SSN is the highest-sensitivity element and the §81-2-303(4) handling rule is nuanced. Confidence 0.71 — recommend human review before publish." },
+    { "t": 11700, "type": "agent_status", "agent": "quality_assurance", "status": "flagged" },
+
+    { "t": 13000, "type": "human_review", "path": "transactions[0].records[0].fields.secondaryClassification", "fieldKey": "secondaryClassification", "action": "approved", "reviewedBy": "Chris B., Privacy Officer" },
+    { "t": 13400, "type": "agent_status", "agent": "quality_assurance", "status": "done", "message": "Human approval recorded — all fields cited and consistent" },
+    { "t": 13800, "type": "model_published", "functionId": "marriage-license", "version": 1 }
   ],
   "model": {
     "functionId": "marriage-license",

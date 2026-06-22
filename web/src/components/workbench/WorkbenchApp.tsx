@@ -7,7 +7,6 @@ import { Sidebar } from "@/components/workbench/Sidebar";
 import { Dashboard } from "@/components/workbench/Dashboard";
 import { InventoryTree } from "@/components/workbench/InventoryTree";
 import { ReviewQueue } from "@/components/workbench/ReviewQueue";
-import { Settings } from "@/components/workbench/Settings";
 // Reused detail views from the original build:
 import { ReviewView } from "@/components/ReviewView";
 import { ModelDocumentView } from "@/components/ModelDocumentView";
@@ -32,7 +31,6 @@ const META: Record<AppView, { title: string; sub: string }> = {
   versions: { title: "Version history", sub: "Legislative change → human-approved updates" },
   redaction: { title: "Public-records release", sub: "What's disclosed when the public requests a record" },
   sedi: { title: "SEDI identity", sub: "Where governance connects to verifiable identity" },
-  settings: { title: "Settings", sub: "Workbench configuration" },
 };
 
 // Views reached by drilling in (not in the sidebar) → where their back button returns.
@@ -61,6 +59,7 @@ export function WorkbenchApp() {
         view={view === "reviewDetail" ? "review" : view === "generate" ? "inventory" : view === "modelDoc" ? "models" : view}
         onNavigate={(v) => setView(v)}
         reviewerName={reviewerName}
+        onNameChange={setReviewerName}
         reviewCount={reviewCount}
         governedCount={1284}
       />
@@ -109,7 +108,6 @@ export function WorkbenchApp() {
           {view === "versions" && <MaintenanceView />}
           {view === "redaction" && <RedactionView />}
           {view === "sedi" && <SediCodaView />}
-          {view === "settings" && <Settings reviewerName={reviewerName} onNameChange={setReviewerName} />}
         </div>
       </main>
     </div>

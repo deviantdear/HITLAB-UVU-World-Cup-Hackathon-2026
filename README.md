@@ -2,7 +2,7 @@
 
 > **Equal data rights under the law — at a scale humans can't reach alone.**
 >
-> A demonstration of how AI agent orchestration can **create and maintain** comprehensive data
+> A working demonstration of how AI agent orchestration can **create and maintain** comprehensive data
 > governance models across every county, city, and agency in a state — with a human always in the loop.
 
 **🔗 Live demo:** https://hitlab-uvu-world-cup-hackathon-2026.vercel.app
@@ -23,41 +23,63 @@ As a result, **the same information is governed differently depending on which o
 unequal privacy protections for identical data. Modeling one government function by hand takes a
 records analyst weeks; there are tens of thousands of functions statewide.
 
-## What this demonstrates
+## What we built: the Privacy Workbench
 
-A guided, policymaker-legible walkthrough (a sticky numbered stepper — use the `›` button or the
-tabs) of an **AI agent orchestration** that does this work at scale:
+Not a slideshow — **the operational console a county privacy officer (Chris B.) actually works in.**
+The live demo is a single application with a sidebar; the pitch is a scripted walk through her workday.
+The bounty frames these models as *operational governance infrastructure*, so we built the tool, not a
+deck about the tool.
 
-| Step | What you see |
+| Workbench screen | What it demonstrates |
 | --- | --- |
-| **Title** | The thesis and the human at the center — Chris B., a county privacy officer. |
-| **Scale** | An entity × function grid: almost everything is ungoverned. Click a cell to generate. |
-| **Orchestration** | 10 specialized agents (Legal Authority, Classification, Retention, …) read real Utah statutes and build a Marriage License model **live**, field by field, each with citations + a confidence score. |
-| **Review** | The QA agent flags the SSN classification; **a human approves before publish** — the AI proposes, the officer disposes. |
-| **Model** | The finished, citation-backed governance model — the same structure as Utah's Marriage Model. |
-| **Equal Rights** | The same Business License governed by **Utah County vs. Orem City** — identical personal data, divergent classification/retention. An agent flags the inequality and recommends harmonization. |
-| **Maintenance** | New legislation is detected; agents propose a field-level diff; a human approves → **v2 published**. Models are living infrastructure. |
-| **SEDI** | How governance models (policy) connect to **verifiable digital identity** (SEDI/KERI) so government collects the *minimum* data — eliminating risk entirely (e.g., the marriage-license SSN). |
+| **Dashboard** | The whole program at a glance — functions governed, items awaiting a human, runs in progress, inconsistencies found. |
+| **Generate a model** | 10 specialized agents (Legal Authority, Classification, Retention, Data Minimization, …) read real Utah statutes and build a Marriage License model **live**, each field with citations + a confidence score. When the Records and Data Minimization agents conflict over the SSN, the build **stops and asks the officer** — she resolves it inline, and only then does it publish. *The AI proposes; the officer disposes.* |
+| **Published models** | The finished, citation-backed governance model — the same structure as Utah's own Marriage Model. |
+| **Governance inventory** | The statewide scope, as a tree (unit type → office → function → record) keyed to what each entity type actually does — not a 14,000-cell grid a human clicks one by one. |
+| **Review queue + Consistency scan** | Every exception — flagged field, legal change, cross-jurisdiction conflict — routes to one human queue. One **consistency scan** compares a record type across *every* Utah jurisdiction at once and bulk-flags the inconsistencies. |
+| **Equal data rights** | The same Business License governed by **Utah County vs. Orem City** — identical personal data, divergent classification/retention. An agent flags the inequality and harmonizes it with one click. |
+| **Version history** | New legislation is detected; agents propose a field-level diff; the officer **approves, edits, or rejects** → v2 published. Models are living infrastructure. |
+| **Public records** | When the public requests a record, the Redaction agent applies the model automatically — DOB, address, SSN blacked out, each with its governing citation. |
+| **SEDI identity** | How governance models (policy) connect to **verifiable digital identity** (SEDI/KERI) so government collects the *minimum* data — eliminating risk entirely (e.g. the marriage-license SSN). |
+
+The full presenter walkthrough is in **[docs/SCRIPT.md](docs/SCRIPT.md)**.
 
 ### Design principles
-- **Human-in-the-loop.** Every sensitive recommendation is gated on a human approval.
+- **Human-in-the-loop.** Every sensitive recommendation — and every inter-agent conflict — is gated on a human decision.
 - **Provenance everywhere.** Every field records which agent produced it, what it cited, and a confidence score.
 - **Demo-safe.** The orchestration replays a recorded event log, so the live demo never depends on a cold API call.
+
+## How it maps to the bounty
+
+- **Agent orchestration** → the *Generate a model* run: 10 specialized agents coordinated to assemble one cited model.
+- **Maintenance at scale** → *Version history* (legislative change → diff → human approval) + the *Consistency scan*.
+- **Human oversight** (extra-points) → the unified *Review queue* and the inline conflict gate.
+- **Equal data rights** → the cross-jurisdiction comparison, surfaced automatically and harmonized.
+- **Scalability** → one pipeline drives the whole *Governance inventory*; humans work only the exceptions.
+
+A candid architecture and total-cost-of-ownership analysis — including why a human-supervised system is
+the right *first* commitment for a public body and how full agentic autonomy is a costed, gated upgrade —
+is in **[/presentations](presentations)**, alongside the node-based graph schema and the build roadmap.
 
 ## Architecture
 
 ```
-/shared/governanceModel.ts   ← the frozen schema contract (GovernanceModel + GoldenRun + events)
-/engine                      ← agent orchestration (TypeScript, Claude API) — emits {model, events}
-/web                         ← Next.js 16 + React 19 + Tailwind v4 frontend (this is the demo)
-/data                        ← curated source corpus + committed "golden run" outputs
+shared/governanceModel.ts   ← the frozen schema contract (GovernanceModel + Field + GoldenRun + events)
+data/                       ← curated golden-run outputs the demo replays ({events, model} per run)
+web/                        ← Next.js 16 + React 19 + Tailwind v4 frontend — this is the demo
+presentations/              ← engine architecture, cost analysis, graph schema, build roadmap (docs)
+img/                        ← architecture & graph-schema diagrams
 ```
 
-The engine and frontend are decoupled by the schema: the engine emits a `GoldenRun`
-(`{ events, model }`); the frontend **replays** the event log to animate the agents and assemble
-the model. See [CONTEXT.md](CONTEXT.md) for the domain model and [docs/PLAN.md](docs/PLAN.md) for
-the build plan, and [docs/adr/0001-per-field-provenance-schema.md](docs/adr/0001-per-field-provenance-schema.md)
-for the key design decision.
+Engine and frontend are decoupled by the schema: the orchestration engine emits a `GoldenRun`
+(`{ events, model }`); the frontend **replays** the event log to animate the agents and assemble the
+model field-by-field. Every field carries its own provenance (agent, citations, confidence, review
+status), so the orchestration view, the human-review gate, the version diff, and the equal-rights
+comparison are all just different projections of one frozen contract — see
+[docs/adr/0001-per-field-provenance-schema.md](docs/adr/0001-per-field-provenance-schema.md). The
+decision to present this as an operational workbench is recorded in
+[docs/adr/0002-workbench-operational-framing.md](docs/adr/0002-workbench-operational-framing.md);
+[CONTEXT.md](CONTEXT.md) holds the domain glossary.
 
 **Tech:** Next.js (App Router) · React Flow (orchestration graph) · Framer Motion · Tailwind v4 ·
 Anthropic Claude API · deployed on Vercel.
@@ -67,24 +89,29 @@ Anthropic Claude API · deployed on Vercel.
 ```bash
 cd web
 npm install
-npm run dev          # http://localhost:3000
+npm run dev            # http://localhost:3000  (the Workbench)
 npm run sync:contract  # re-pull the schema + golden runs from /shared and /data
 ```
 
-## Status & honesty notes
+A linear, click-through version of the same beats is also served at **`/presentation`** as an on-stage fallback.
 
-- This is a **prototype**: the marriage-license model uses validated ground-truth data; the
-  business-license comparison and the maintenance "Utah H.B. 412" are **clearly labeled illustrative**
-  (real statute citations such as Utah Code § 81-2-303 and § 63G-2-302 are accurate).
-- Sample "golden run" data ships in `/data`; the live engine output swaps in via `npm run sync:contract`.
-- _This README will evolve as the engine integration lands._
+## What's real vs. illustrative
+
+We are careful not to present invented law as real:
+
+- The **marriage-license** model uses validated ground-truth data, and its statute citations
+  (e.g. Utah Code § 81-2-303(4), § 63G-2-302) are **accurate**.
+- The **business-license** comparison values and the **maintenance bill** ("H.B. 412") are **clearly
+  labeled illustrative**, chosen to demonstrate the mechanism.
+- The demo **replays curated golden-run data** committed in `/data`; the orchestration engine that
+  produces such runs is documented in [/presentations](presentations).
 
 ## Team
 
 | Name | Role | GitHub |
 | ---- | ---- | ------ |
-| Craig Cossairt | Frontend & demo | [@craigcossairt](https://github.com/craigcossairt) |
-| Valerie Adams | Agent orchestration engine | — |
+| Craig Cossairt | Frontend & demo (the Workbench) | [@craigcossairt](https://github.com/craigcossairt) |
+| Valerie Adams | Agent orchestration engine & architecture | [@deviantdear](https://github.com/deviantdear) |
 
 ## License
 
